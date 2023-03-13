@@ -12,7 +12,6 @@ void Game::initWindow()
 	this->videoMode.width = 800;
 	this->window = new sf::RenderWindow(this->videoMode, "Game", sf::Style::Titlebar | sf::Style::Close);
 	this->window->setFramerateLimit(60);
-
 }
 
 void Game::initCharacter()
@@ -22,6 +21,7 @@ void Game::initCharacter()
 	this->character.setFillColor(sf::Color::White);
 	//this->jumpHeight = jumpHeight;
 	//this->speed = speed;
+	//Velocity
 }
 
 //Constructors /Destructor

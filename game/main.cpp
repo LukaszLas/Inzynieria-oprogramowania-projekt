@@ -14,6 +14,9 @@ int main()
 		game.render();
 	}
 	return 0;
+
+
+
 }
 /*
 		sf::RectangleShape rs(sf::Vector2f(100, 100));
