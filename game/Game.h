@@ -1,9 +1,9 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+
 class Game
 {
 private:
-	//Variable
 	//Window
 	sf::RenderWindow* window;
 	sf::VideoMode videoMode;
@@ -13,9 +13,15 @@ private:
 	void initVariable();
 	void initWindow();
 	void initCharacter();
-	float speed;
-	//bool canJump=true;
-	//float jumpHeight=100.0f;
+	//Variable
+	sf::Vector2f velocity;
+	sf::Clock clock;
+	int groundHeight = 450;
+	float moveSpeed = 10.0f;
+	float jumpSpeed = 100.0f;
+	float gravity = 1;
+	bool canJump=true;
+	float jumpHeight=10.0f;
 
 public:
 	Game();

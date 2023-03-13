@@ -4,6 +4,7 @@
 void Game::initVariable()
 {
 	this->window = nullptr;
+	sf::Vector2f velocity(sf::Vector2f(0, 0));
 }
 
 void Game::initWindow()
@@ -11,17 +12,14 @@ void Game::initWindow()
 	this->videoMode.height = 600;
 	this->videoMode.width = 800;
 	this->window = new sf::RenderWindow(this->videoMode, "Game", sf::Style::Titlebar | sf::Style::Close);
-	this->window->setFramerateLimit(60);
+	//this->window->setFramerateLimit(60);
 }
 
 void Game::initCharacter()
 {
-	this->character.setPosition(400, 400);
+	this->character.setPosition(400, 450);
 	this->character.setSize(sf::Vector2f(100.f, 100.f));
 	this->character.setFillColor(sf::Color::White);
-	//this->jumpHeight = jumpHeight;
-	//this->speed = speed;
-	//Velocity i inne takie
 }
 
 //Constructors /Destructor
@@ -75,15 +73,37 @@ void Game::render()
 
 void Game::moveCharacter()
 {
-	//velocity.x = 0.0f;
+	velocity.x = 0.0f;
+	float dt = clock.restart().asSeconds();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		this->character.move(-10.f, 0);
+		this->velocity.x -= this->moveSpeed;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		this->character.move(10.f, 0);
+		this->velocity.x += this->moveSpeed;
 	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && canJump)
+	{
+		canJump = false;
+		this->velocity.y = -sqrtf(2.0f * 9.81f * jumpHeight);
+		//this->velocity.y = this->jumpSpeed * dt *(-1);
+		//this->character.move({ 0, -moveSpeed });
+	}
+	velocity.y += 9.81f * dt;
+	
+	this->character.move(velocity.x, velocity.y);
+	if (this->character.getPosition().y + this->character.getSize().y< groundHeight || this->velocity.y<0)
+	{
+		this->velocity.y += this->gravity;
+	}
+	else
+	{
+		this->character.setPosition(this->character.getPosition().x, groundHeight);
+		velocity.y = 0;
+		canJump = true;
+	}
+	
 	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && canJump)
 	//{
 	//	canJump == false;
