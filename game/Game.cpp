@@ -21,7 +21,7 @@ void Game::initCharacter()
 	this->character.setFillColor(sf::Color::White);
 	//this->jumpHeight = jumpHeight;
 	//this->speed = speed;
-	//Velocity
+	//Velocity i inne takie
 }
 
 //Constructors /Destructor
