@@ -13,6 +13,11 @@ void Game::initWindow()
 	this->window = new sf::RenderWindow(this->videoMode, "Game", sf::Style::Titlebar | sf::Style::Close);
 	this->window->setFramerateLimit(60);
 
+
+
+
+
+
 }
 
 void Game::initCharacter()
