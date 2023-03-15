@@ -5,21 +5,31 @@ void Game::initVariable()
 {
 	this->window = nullptr;
 	sf::Vector2f velocity(sf::Vector2f(0, 0));
+	const float window_width = 800;
+	const float window_height = 600;
+
 }
 
 void Game::initWindow()
 {
-	this->videoMode.height = 600;
-	this->videoMode.width = 800;
+	this->videoMode.height = window_height;
+	this->videoMode.width = window_width;
 	this->window = new sf::RenderWindow(this->videoMode, "Game", sf::Style::Titlebar | sf::Style::Close);
-	//this->window->setFramerateLimit(60);
+	this->window->setFramerateLimit(60);
 }
 
 void Game::initCharacter()
 {
 	this->character.setPosition(400, 450);
-	this->character.setSize(sf::Vector2f(100.f, 100.f));
+	this->character.setSize(sf::Vector2f(50.f, 50.f));
 	this->character.setFillColor(sf::Color::White);
+}
+
+void Game::initTestingGround()
+{
+	this->testing_ground.setPosition(0,window_height-groundHeight);
+	this->testing_ground.setSize(sf::Vector2f(window_width, groundHeight));
+	this->testing_ground.setFillColor(sf::Color::Green);
 }
 
 //Constructors /Destructor
@@ -28,6 +38,7 @@ Game::Game()
 	this->initVariable();
 	this->initWindow();
 	this->initCharacter();
+	this->initTestingGround();
 }
 
 Game::~Game()
@@ -42,7 +53,9 @@ const bool Game::getWindowIsOpen() const
 
 void Game::update()
 {
+	dt = dt_clock.restart().asSeconds();
 	this->pollEvents();
+	moveCharacter();
 }
 
 void Game::pollEvents()
@@ -59,7 +72,6 @@ void Game::pollEvents()
 				this->window->close();
 			break;
 		}
-		moveCharacter();
 	}
 }
 
@@ -68,48 +80,46 @@ void Game::render()
 	this->window->clear();
 	//draw game objects
 	this->window->draw(this->character);
+	this->window->draw(this->testing_ground);
 	this->window->display();
 }
 
 void Game::moveCharacter()
 {
 	velocity.x = 0.0f;
-	float dt = clock.restart().asSeconds();
+	velocity.y = 2.0f;
+	//Key pressed move
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		this->velocity.x -= this->moveSpeed;
+		this->velocity.x -= moveSpeed*this->getDT();
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		this->velocity.x += this->moveSpeed;
+		this->velocity.x += moveSpeed*this->getDT();
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && canJump)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 	{
-		canJump = false;
-		this->velocity.y = -sqrtf(2.0f * 9.81f * jumpHeight);
-		//this->velocity.y = this->jumpSpeed * dt *(-1);
-		//this->character.move({ 0, -moveSpeed });
+		velocity.y += -moveSpeed * 2 * velocity.y * dt;
 	}
-	velocity.y += 9.81f * dt;
-	
-	this->character.move(velocity.x, velocity.y);
-	if (this->character.getPosition().y + this->character.getSize().y< groundHeight || this->velocity.y<0)
+	character.move(velocity);
+	//collisions
+	if (character.getPosition().x < 0.f)
 	{
-		this->velocity.y += this->gravity;
+		character.setPosition(0.f, character.getPosition().y); 
 	}
-	else
+	if (character.getPosition().y < 0.f)
 	{
-		this->character.setPosition(this->character.getPosition().x, groundHeight);
-		velocity.y = 0;
-		canJump = true;
+		character.setPosition(character.getPosition().x, 0.f); 
 	}
-	
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && canJump)
-	//{
-	//	canJump == false;
-	//
-		//velocity.y = sqrtf(2.0f * 981.0f * jumpHeight);
-	//	
-	//}
-	//velocity.y += 981.0f;
+	if (character.getPosition().x + character.getGlobalBounds().width > this->window_width) 
+	{
+		character.setPosition(this->window_width - character.getGlobalBounds().width, character.getPosition().y);
+	}
+	if (character.getPosition().y + character.getGlobalBounds().height > this->window_height)
+	{
+		character.setPosition(character.getPosition().x, this->window_height - character.getGlobalBounds().height);
+	}
 }
+
+
+
