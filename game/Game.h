@@ -16,10 +16,13 @@ private:
 	//Game objects
 	sf::RectangleShape character;
 	sf::RectangleShape testing_ground;
+	vector<sf::RectangleShape> platforms;
+	sf::RectangleShape platform;
 	void initVariable();
 	void initWindow();
 	void initCharacter();
 	void initTestingGround();
+	void initObjects();
 	//Variable
 	sf::Vector2f velocity;
 	float dt;
@@ -28,7 +31,7 @@ private:
 	const float window_width = 800;
 	const float window_height = 600;
 	float groundHeight = 20.0f;
-
+	sf::FloatRect nextPos;
 public:
 	Game();
 	virtual ~Game();

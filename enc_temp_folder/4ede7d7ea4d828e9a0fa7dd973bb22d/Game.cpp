@@ -36,6 +36,7 @@ void Game::initObjects()
 {
 	this->platform.setFillColor(sf::Color::Red);
 	this->platform.setSize(sf::Vector2f(100.f, 20.f));
+	this->platform.setPosition(600.f, 500.f);
 	this->platform.setPosition(300.f, 350.f);
 	this->platforms.push_back(this->platform);
 }
