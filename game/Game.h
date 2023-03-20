@@ -25,6 +25,7 @@ private:
 	void initObjects();
 	//Variable
 	sf::Vector2f velocity;
+	float gravity = 4.5f;
 	float dt;
 	sf::Clock dt_clock;
 	float moveSpeed = 100.0f;
