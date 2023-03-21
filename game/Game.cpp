@@ -36,11 +36,7 @@ void Game::initObjects()
 {
 	this->platform.setFillColor(sf::Color::Red);
 	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(200.f, 450.f);
-	this->platforms.push_back(this->platform);
-	this->platform.setPosition(440.f, 290.f);
-	this->platforms.push_back(this->platform);	
-	this->platform.setPosition(200.f, 140.f);
+	this->platform.setPosition(300.f, 350.f);
 	this->platforms.push_back(this->platform);
 }
 
@@ -84,10 +80,6 @@ void Game::pollEvents()
 			if (this->ev.key.code == sf::Keyboard::Escape)
 				this->window->close();
 			break;
-		case sf::Event::KeyReleased:
-			if (this->ev.key.code == sf::Keyboard::Up)
-				velocity.y -= gravity * dt;
-			break;
 		}
 	}
 }
@@ -105,10 +97,13 @@ void Game::render()
 	this->window->display();
 }
 
+
+
+
 void Game::moveCharacter()
 {
-	velocity.x = 0.0f;
-	velocity.y += gravity * dt;
+	float gravity = 300.0f;
+	float jumpHeight = 300.0f;
 	//Key pressed move
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
@@ -118,16 +113,14 @@ void Game::moveCharacter()
 	{
 		this->velocity.x += moveSpeed*this->getDT();
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) && (this->canJump==true))
 	{
-		velocity.y = -6.0f;
-		//velocity.y += -moveSpeed * 2 * velocity.y * dt;
+		this->canJump = false;
+		this->velocity.y = -sqrt(2.0f * gravity * jumpHeight);
 	}
-	if (!(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)))
-	{
-		velocity.y += gravity * dt;
-		//velocity.y += -moveSpeed * 2 * velocity.y * dt;
-	}
+
+	this->velocity.y += gravity * dt;
+
 
 	//objects collision
 	for (auto &platform : platforms)
@@ -147,6 +140,7 @@ void Game::moveCharacter()
 				&& characterBounds.left + characterBounds.width > platformBounds.left)
 			{
 				velocity.y = 0.f;
+				this->canJump = true;
 				character.setPosition(characterBounds.left, platformBounds.top - characterBounds.height);
 			}
 			//top collision
@@ -180,7 +174,8 @@ void Game::moveCharacter()
 	}
 
 	character.move(velocity);
-
+	this->velocity.y = 0.0f;
+	this->velocity.x = 0.0f;
 	//screen collision
 	if (character.getPosition().x < 0.f)
 	{
@@ -197,8 +192,12 @@ void Game::moveCharacter()
 	if (character.getPosition().y + character.getGlobalBounds().height > this->window_height)
 	{
 		character.setPosition(character.getPosition().x, this->window_height - character.getGlobalBounds().height);
+		this->canJump = true;
 	}
 }
+
+
+
 
 
 
