@@ -38,6 +38,11 @@ void Game::initObjects()
 	this->platform.setSize(sf::Vector2f(100.f, 20.f));
 	this->platform.setPosition(300.f, 350.f);
 	this->platforms.push_back(this->platform);
+	this->platform.setFillColor(sf::Color::Red);
+	this->platform.setSize(sf::Vector2f(100.f, 20.f));
+	this->platform.setPosition(600.f, 250.f);
+	this->platforms.push_back(this->platform);
+
 }
 
 //Constructors /Destructor
@@ -46,7 +51,7 @@ Game::Game()
 	this->initVariable();
 	this->initWindow();
 	this->initCharacter();
-	this->initTestingGround();
+	//this->initTestingGround();
 	this->initObjects();
 }
 
@@ -103,7 +108,7 @@ void Game::render()
 void Game::moveCharacter()
 {
 	float gravity = 300.0f;
-	float jumpHeight = 300.0f;
+	float jumpHeight = 5.0f;
 	//Key pressed move
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
@@ -174,7 +179,7 @@ void Game::moveCharacter()
 	}
 
 	character.move(velocity);
-	this->velocity.y = 0.0f;
+	//this->velocity.y = 0.0f;
 	this->velocity.x = 0.0f;
 	//screen collision
 	if (character.getPosition().x < 0.f)

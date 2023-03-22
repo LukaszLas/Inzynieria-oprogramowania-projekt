@@ -29,7 +29,7 @@ private:
 	float gravity = 4.5f;
 	float dt;
 	sf::Clock dt_clock;
-	float moveSpeed = 100.0f;
+	float moveSpeed = 550.0f;
 	const float window_width = 800;
 	const float window_height = 600;
 	float groundHeight = 20.0f;
