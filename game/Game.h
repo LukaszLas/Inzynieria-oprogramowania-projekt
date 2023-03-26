@@ -21,18 +21,16 @@ private:
 	void initVariable();
 	void initWindow();
 	void initCharacter();
-	void initTestingGround();
 	void initObjects();
 	//Variable
 	sf::Vector2f velocity;
 	bool canJump = true;
-	float gravity = 4.5f;
+	float gravity = 3.5f;
 	float dt;
 	sf::Clock dt_clock;
-	float moveSpeed = 550.0f;
-	const float window_width = 800;
-	const float window_height = 600;
-	float groundHeight = 20.0f;
+	float moveSpeed = 350.0f;
+	const float window_width = 1920;
+	const float window_height = 1080;
 	sf::FloatRect nextPos;
 public:
 	Game();

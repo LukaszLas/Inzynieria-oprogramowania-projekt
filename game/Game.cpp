@@ -5,8 +5,8 @@ void Game::initVariable()
 {
 	this->window = nullptr;
 	sf::Vector2f velocity(sf::Vector2f(0, 0));
-	const float window_width = 800;
-	const float window_height = 600;
+	const float window_width = 1920;
+	const float window_height = 1080;
 
 }
 
@@ -14,33 +14,26 @@ void Game::initWindow()
 {
 	this->videoMode.height = window_height;
 	this->videoMode.width = window_width;
-	this->window = new sf::RenderWindow(this->videoMode, "Game", sf::Style::Titlebar | sf::Style::Close);
+	this->window = new sf::RenderWindow(this->videoMode, "Game", sf::Style::Titlebar | sf::Style::Fullscreen);
 	this->window->setFramerateLimit(60);
 }
 
 void Game::initCharacter()
 {
-	this->character.setPosition(400, 450);
+	this->character.setPosition(0, 0);
 	this->character.setSize(sf::Vector2f(50.f, 50.f));
 	this->character.setFillColor(sf::Color::White);
-}
-
-void Game::initTestingGround()
-{
-	this->testing_ground.setPosition(0,window_height-groundHeight);
-	this->testing_ground.setSize(sf::Vector2f(window_width, groundHeight));
-	this->testing_ground.setFillColor(sf::Color::Green);
 }
 
 void Game::initObjects()
 {
 	this->platform.setFillColor(sf::Color::Red);
 	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(300.f, 350.f);
+	this->platform.setPosition(900.f, 950.f);
 	this->platforms.push_back(this->platform);
 	this->platform.setFillColor(sf::Color::Red);
 	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(600.f, 250.f);
+	this->platform.setPosition(600.f, 850.f);
 	this->platforms.push_back(this->platform);
 
 }
