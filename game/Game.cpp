@@ -1,5 +1,4 @@
 #include "Game.h"
-
 //Private Functions
 void Game::initVariable()
 {
@@ -21,8 +20,10 @@ void Game::initWindow()
 void Game::initCharacter()
 {
 	this->character.setPosition(0, 0);
-	this->character.setSize(sf::Vector2f(50.f, 50.f));
-	this->character.setFillColor(sf::Color::White);
+	this->initTexture();
+	this->initSprite();
+	this->character.setSize(sf::Vector2f(70.f, 70.f));
+	this->character.setTexture(&texture);
 }
 
 void Game::initObjects()
@@ -33,9 +34,22 @@ void Game::initObjects()
 	this->platforms.push_back(this->platform);
 	this->platform.setFillColor(sf::Color::Red);
 	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(600.f, 850.f);
+	this->platform.setPosition(700.f, 850.f);
 	this->platforms.push_back(this->platform);
 
+}                              
+
+void Game::initTexture()
+{
+	if (!this->texture.loadFromFile("Images/image.png"))
+	{
+		cout << "Error initTexture";
+	}
+}
+
+void Game::initSprite()
+{
+	this->sprite.setTexture(this->texture);
 }
 
 //Constructors /Destructor
@@ -106,10 +120,12 @@ void Game::moveCharacter()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
 		this->velocity.x -= moveSpeed*this->getDT();
+
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
 		this->velocity.x += moveSpeed*this->getDT();
+
 	}
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) && (this->canJump==true))
 	{
@@ -193,8 +209,6 @@ void Game::moveCharacter()
 		this->canJump = true;
 	}
 }
-
-
 
 
 

@@ -18,10 +18,18 @@ private:
 	sf::RectangleShape testing_ground;
 	vector<sf::RectangleShape> platforms;
 	sf::RectangleShape platform;
+	sf::Sprite sprite;
+	sf::Texture texture;
+	//Image
+	
+	//Initialization
 	void initVariable();
 	void initWindow();
 	void initCharacter();
 	void initObjects();
+	void initTexture();
+	void initSprite();
+
 	//Variable
 	sf::Vector2f velocity;
 	bool canJump = true;
@@ -42,5 +50,5 @@ public:
 	void render();
 	void moveCharacter();
 	float getDT() { return dt; }
-
+	sf::IntRect uvRect;
 };
