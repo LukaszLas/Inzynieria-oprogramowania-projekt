@@ -17,9 +17,13 @@ private:
 	sf::RectangleShape character;
 	sf::RectangleShape testing_ground;
 	vector<sf::RectangleShape> platforms;
+	vector<sf::RectangleShape> abysses;
 	sf::RectangleShape platform;
+	sf::RectangleShape abyss;
 	sf::Sprite sprite;
 	sf::Texture texture;
+	sf::Font font;
+	sf::Text text;
 	//Image
 	
 	//Initialization
@@ -29,6 +33,8 @@ private:
 	void initObjects();
 	void initTexture();
 	void initSprite();
+	void initFont();
+	void initText();
 
 	//Variable
 	sf::Vector2f velocity;

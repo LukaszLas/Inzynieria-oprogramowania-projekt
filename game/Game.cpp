@@ -19,7 +19,7 @@ void Game::initWindow()
 
 void Game::initCharacter()
 {
-	this->character.setPosition(0, 0);
+	this->character.setPosition(65.f, 825.f);
 	this->initTexture();
 	this->initSprite();
 	this->character.setSize(sf::Vector2f(70.f, 70.f));
@@ -28,15 +28,25 @@ void Game::initCharacter()
 
 void Game::initObjects()
 {
-	this->platform.setFillColor(sf::Color::Red);
+	this->platform.setFillColor(sf::Color::Green);
 	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(900.f, 950.f);
-	this->platforms.push_back(this->platform);
-	this->platform.setFillColor(sf::Color::Red);
-	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(700.f, 850.f);
+	this->platform.setPosition(375.f, 700.f);
 	this->platforms.push_back(this->platform);
 
+	this->platform.setFillColor(sf::Color::Green);
+	this->platform.setSize(sf::Vector2f(100.f, 20.f));
+	this->platform.setPosition(250.f, 850.f);
+	this->platforms.push_back(this->platform);
+
+	this->platform.setFillColor(sf::Color::Green);
+	this->platform.setSize(sf::Vector2f(100.f, 20.f));
+	this->platform.setPosition(50.f, 950.f);
+	this->platforms.push_back(this->platform);
+
+	this->abyss.setFillColor(sf::Color::Red);
+	this->abyss.setSize(sf::Vector2f(200.f, 10.f));
+	this->abyss.setPosition(150.f, 1070.f);
+	this->abysses.push_back(this->abyss);
 }                              
 
 void Game::initTexture()
@@ -52,6 +62,25 @@ void Game::initSprite()
 	this->sprite.setTexture(this->texture);
 }
 
+//void Game::initFont()
+//{
+//	if (!this->font.loadFromFile("Fonts/arial.ttf"))
+//	{
+//		cout << "Error initFont";
+//	}
+//}
+
+//void Game::initText()
+//{
+//	this->text.setFont(font);
+//	this->text.setString("Deaths: ");
+//	this->text.setCharacterSize(50);
+//	this->text.setStyle(sf::Text::Bold);
+//	this->text.setPosition(1800.f, 1050.f);
+//
+//}
+
+
 //Constructors /Destructor
 Game::Game()
 {
@@ -60,6 +89,8 @@ Game::Game()
 	this->initCharacter();
 	//this->initTestingGround();
 	this->initObjects();
+	//this->initFont();
+	//this->initText();
 }
 
 Game::~Game()
@@ -102,10 +133,16 @@ void Game::render()
 	//draw game objects
 	this->window->draw(this->character);
 	this->window->draw(this->testing_ground);
+	//this->window->draw(this->text);
+	for (auto& i : this->abysses)
+	{
+		this->window->draw(i);
+	}
 	for (auto& i : this->platforms)
 	{
 		this->window->draw(i);
 	}
+
 	this->window->display();
 }
 
@@ -139,52 +176,87 @@ void Game::moveCharacter()
 	//objects collision
 	for (auto &platform : platforms)
 	{
-		sf::FloatRect characterBounds = character.getGlobalBounds();
-		sf::FloatRect platformBounds = platform.getGlobalBounds();
-		nextPos = characterBounds;
-		nextPos.left += velocity.x;
-		nextPos.top += velocity.y;
+			sf::FloatRect characterBounds = character.getGlobalBounds();
+			sf::FloatRect platformBounds = platform.getGlobalBounds();
+			sf::FloatRect abyssBounds = abyss.getGlobalBounds();
+			nextPos = characterBounds;
+			nextPos.left += velocity.x;
+			nextPos.top += velocity.y;
 
-		if (platformBounds.intersects(nextPos))
-		{
-			//bottom collision
-			if (characterBounds.top < platformBounds.top
-				&& characterBounds.top + characterBounds.height < platformBounds.top + platformBounds.height
-				&& characterBounds.left < platformBounds.left + platformBounds.width
-				&& characterBounds.left + characterBounds.width > platformBounds.left)
+			if (platformBounds.intersects(nextPos))
 			{
-				velocity.y = 0.f;
-				this->canJump = true;
-				character.setPosition(characterBounds.left, platformBounds.top - characterBounds.height);
+				//bottom collision
+				if (characterBounds.top < platformBounds.top
+					&& characterBounds.top + characterBounds.height < platformBounds.top + platformBounds.height
+					&& characterBounds.left < platformBounds.left + platformBounds.width
+					&& characterBounds.left + characterBounds.width > platformBounds.left)
+				{
+					velocity.y = 0.f;
+					this->canJump = true;
+					character.setPosition(characterBounds.left, platformBounds.top - characterBounds.height);
+				}
+				//top collision
+				else if (characterBounds.top > platformBounds.top
+					&& characterBounds.top + characterBounds.height > platformBounds.top + platformBounds.height
+					&& characterBounds.left < platformBounds.left + platformBounds.width
+					&& characterBounds.left + characterBounds.width > platformBounds.left)
+				{
+					velocity.y = 0.f;
+					character.setPosition(characterBounds.left, platformBounds.top + platformBounds.height);
+				}
+				//right collision
+				else if (characterBounds.left < platformBounds.left
+					&& characterBounds.left + characterBounds.width < platformBounds.left + platformBounds.width
+					&& characterBounds.top < platformBounds.top + platformBounds.height
+					&& characterBounds.top + characterBounds.height > platformBounds.top)
+				{
+					velocity.x = 0.f;
+					character.setPosition(platformBounds.left - characterBounds.width, characterBounds.top);
+				}
+				//left collision
+				else if (characterBounds.left > platformBounds.left
+					&& characterBounds.left + characterBounds.width > platformBounds.left + platformBounds.width
+					&& characterBounds.top < platformBounds.top + platformBounds.height
+					&& characterBounds.top + characterBounds.height > platformBounds.top)
+				{
+					velocity.x = 0.f;
+					character.setPosition(platformBounds.left + platformBounds.width, characterBounds.top);
+				}
 			}
-			//top collision
-			else if (characterBounds.top > platformBounds.top
-				&& characterBounds.top + characterBounds.height > platformBounds.top + platformBounds.height
-				&& characterBounds.left < platformBounds.left + platformBounds.width
-				&& characterBounds.left + characterBounds.width > platformBounds.left)
+	}
+	for (auto& abyss : abysses)
+	{
+		sf::FloatRect characterBounds = character.getGlobalBounds();
+		sf::FloatRect abyssBounds = abyss.getGlobalBounds();
+
+		if (abyssBounds.intersects(nextPos))
+		{
+			//abyss bottom collision
+			if (characterBounds.top < abyssBounds.top
+				&& characterBounds.top + characterBounds.height < abyssBounds.top + abyssBounds.height
+				&& characterBounds.left < abyssBounds.left + abyssBounds.width
+				&& characterBounds.left + characterBounds.width > abyssBounds.left)
 			{
-				velocity.y = 0.f;
-				character.setPosition(characterBounds.left, platformBounds.top + platformBounds.height);
+				character.setPosition(65.f, 825.f);
 			}
 			//right collision
-			else if (characterBounds.left < platformBounds.left
-				&& characterBounds.left + characterBounds.width < platformBounds.left + platformBounds.width
-				&& characterBounds.top < platformBounds.top + platformBounds.height
-				&& characterBounds.top + characterBounds.height > platformBounds.top)
+			else if (characterBounds.left < abyssBounds.left
+				&& characterBounds.left + characterBounds.width < abyssBounds.left + abyssBounds.width
+				&& characterBounds.top < abyssBounds.top + abyssBounds.height
+				&& characterBounds.top + characterBounds.height > abyssBounds.top)
 			{
-				velocity.x = 0.f;
-				character.setPosition(platformBounds.left - characterBounds.width, characterBounds.top);
+				character.setPosition(65.f, 825.f);
 			}
 			//left collision
-			else if (characterBounds.left > platformBounds.left
-				&& characterBounds.left + characterBounds.width > platformBounds.left + platformBounds.width
-				&& characterBounds.top < platformBounds.top + platformBounds.height
-				&& characterBounds.top + characterBounds.height > platformBounds.top)
+			else if (characterBounds.left > abyssBounds.left
+				&& characterBounds.left + characterBounds.width > abyssBounds.left + abyssBounds.width
+				&& characterBounds.top < abyssBounds.top + abyssBounds.height
+				&& characterBounds.top + characterBounds.height > abyssBounds.top)
 			{
-				velocity.x = 0.f;
-				character.setPosition(platformBounds.left + platformBounds.width, characterBounds.top);
+				character.setPosition(65.f, 825.f);
 			}
 		}
+
 	}
 
 	character.move(velocity);
@@ -209,7 +281,3 @@ void Game::moveCharacter()
 		this->canJump = true;
 	}
 }
-
-
-
-
