@@ -32,14 +32,17 @@ private:
 	void initCharacter();
 	void initObjects();
 	void initTexture();
+	void createPlatform(float sizeX, float sizeY, float positionX, float positionY);
 	void initSprite();
-	void initFont();
-	void initText();
+	//void initFont();
+	//void initText();
 
 	//Variable
 	sf::Vector2f velocity;
 	bool canJump = true;
-	float gravity = 3.5f;
+	float gravity = 50.5f;
+	float jumpHeight = 3.0f;
+
 	float dt;
 	sf::Clock dt_clock;
 	float moveSpeed = 350.0f;

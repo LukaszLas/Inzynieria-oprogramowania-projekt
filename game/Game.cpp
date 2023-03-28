@@ -22,26 +22,16 @@ void Game::initCharacter()
 	this->character.setPosition(65.f, 825.f);
 	this->initTexture();
 	this->initSprite();
-	this->character.setSize(sf::Vector2f(70.f, 70.f));
+	this->character.setSize(sf::Vector2f(50.f, 50.f));
 	this->character.setTexture(&texture);
 }
 
 void Game::initObjects()
 {
-	this->platform.setFillColor(sf::Color::Green);
-	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(375.f, 700.f);
-	this->platforms.push_back(this->platform);
 
-	this->platform.setFillColor(sf::Color::Green);
-	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(250.f, 850.f);
-	this->platforms.push_back(this->platform);
-
-	this->platform.setFillColor(sf::Color::Green);
-	this->platform.setSize(sf::Vector2f(100.f, 20.f));
-	this->platform.setPosition(50.f, 950.f);
-	this->platforms.push_back(this->platform);
+	createPlatform(100, 20, 250, 850);
+	createPlatform(100, 20, 370, 700);
+	createPlatform(100, 20, 50, 950);
 
 	this->abyss.setFillColor(sf::Color::Red);
 	this->abyss.setSize(sf::Vector2f(200.f, 10.f));
@@ -55,6 +45,16 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+}
+
+
+
+void Game::createPlatform(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->platform.setFillColor(sf::Color::Green);
+	this->platform.setSize(sf::Vector2f(sizeX, sizeY));
+	this->platform.setPosition(positionX, positionY);
+	this->platforms.push_back(this->platform);
 }
 
 void Game::initSprite()
@@ -151,13 +151,11 @@ void Game::render()
 
 void Game::moveCharacter()
 {
-	float gravity = 300.0f;
-	float jumpHeight = 5.0f;
 	//Key pressed move
+	this->character.setSize(sf::Vector2f(50.f, 50.f));
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
 		this->velocity.x -= moveSpeed*this->getDT();
-
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
@@ -169,7 +167,10 @@ void Game::moveCharacter()
 		this->canJump = false;
 		this->velocity.y = -sqrt(2.0f * gravity * jumpHeight);
 	}
-
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	{
+		this->character.setSize(sf::Vector2f(50.f, 35.f));
+	}
 	this->velocity.y += gravity * dt;
 
 
@@ -260,7 +261,6 @@ void Game::moveCharacter()
 	}
 
 	character.move(velocity);
-	//this->velocity.y = 0.0f;
 	this->velocity.x = 0.0f;
 	//screen collision
 	if (character.getPosition().x < 0.f)
