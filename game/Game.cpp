@@ -25,7 +25,16 @@ void Game::initCharacter()
 	this->character.setSize(sf::Vector2f(50.f, 50.f));
 	this->character.setTexture(&texture);
 }
-
+void Game::initEnemies()
+{
+	this->movingEnemy.setPosition(enemyStartPositionX,enemyStartPositionY);
+	this->initTexture();
+	this->initSprite();
+	this->movingEnemy.setSize(sf::Vector2f(60.f, 60.f));
+	this->movingEnemy.setTexture(&movingEnemyTexture);
+	float enemyMoveRangeRight = 50;
+	float enemyMoveRangeLeft = 50;
+}
 void Game::initObjects()
 {
 
@@ -45,6 +54,10 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->movingEnemyTexture.loadFromFile("Images/cavemanR.png"))
+	{
+		cout << "Error initTexture";
+	}
 }
 
 
@@ -60,6 +73,7 @@ void Game::createPlatform(float sizeX, float sizeY, float positionX, float posit
 void Game::initSprite()
 {
 	this->sprite.setTexture(this->texture);
+	this->enemySprite.setTexture(this->movingEnemyTexture);
 }
 
 //void Game::initFont()
@@ -87,7 +101,7 @@ Game::Game()
 	this->initVariable();
 	this->initWindow();
 	this->initCharacter();
-	//this->initTestingGround();
+	this->initEnemies();
 	this->initObjects();
 	//this->initFont();
 	//this->initText();
@@ -108,6 +122,7 @@ void Game::update()
 	dt = dt_clock.restart().asSeconds();
 	this->pollEvents();
 	moveCharacter();
+	moveEnemy();
 }
 
 void Game::pollEvents()
@@ -132,7 +147,7 @@ void Game::render()
 	this->window->clear();
 	//draw game objects
 	this->window->draw(this->character);
-	this->window->draw(this->testing_ground);
+	this->window->draw(this->movingEnemy);
 	//this->window->draw(this->text);
 	for (auto& i : this->abysses)
 	{
@@ -156,10 +171,12 @@ void Game::moveCharacter()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
 		this->velocity.x -= moveSpeed*this->getDT();
+		this->characterRightGoing = false;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
 		this->velocity.x += moveSpeed*this->getDT();
+		this->characterRightGoing = true;
 
 	}
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) && (this->canJump==true))
@@ -173,6 +190,10 @@ void Game::moveCharacter()
 	}
 	this->velocity.y += gravity * dt;
 
+	if(this->characterRightGoing)
+		this->texture.loadFromFile("Images/image.png");
+	else
+		this->texture.loadFromFile("Images/imageL.png");
 
 	//objects collision
 	for (auto &platform : platforms)
@@ -279,5 +300,40 @@ void Game::moveCharacter()
 	{
 		character.setPosition(character.getPosition().x, this->window_height - character.getGlobalBounds().height);
 		this->canJump = true;
+	}
+}
+
+void Game::moveEnemy()
+{
+	
+	if (movingEnemy.getPosition().x < enemyMoveRangeRight + enemyStartPositionX && moveRight)
+	{
+		movingEnemy.move(5, 0);
+		this->movingEnemyTexture.loadFromFile("Images/cavemanL.png");
+	}
+	else
+	{
+		moveRight = false;
+		movingEnemy.move(-5, 0);
+		this->movingEnemyTexture.loadFromFile("Images/cavemanR.png");
+	}
+	if (movingEnemy.getPosition().x < enemyStartPositionX - enemyMoveRangeLeft)
+		moveRight = true;
+
+	if (movingEnemy.getPosition().x < 0.f)
+	{
+		movingEnemy.setPosition(0.f, movingEnemy.getPosition().y);
+	}
+	if (movingEnemy.getPosition().y < 0.f)
+	{
+		movingEnemy.setPosition(movingEnemy.getPosition().x, 0.f);
+	}
+	if (movingEnemy.getPosition().x + movingEnemy.getGlobalBounds().width > this->window_width)
+	{
+		movingEnemy.setPosition(this->window_width - movingEnemy.getGlobalBounds().width, movingEnemy.getPosition().y);
+	}
+	if (movingEnemy.getPosition().y + movingEnemy.getGlobalBounds().height > this->window_height)
+	{
+		movingEnemy.setPosition(movingEnemy.getPosition().x, this->window_height - movingEnemy.getGlobalBounds().height);
 	}
 }
