@@ -126,6 +126,7 @@ void Game::update()
 	this->pollEvents();
 	moveCharacter();
 	moveEnemy();
+	moveSpikeTrap();
 }
 
 void Game::pollEvents()
@@ -371,9 +372,9 @@ void Game::moveSpikeTrap()
 			float startingPos = spikeTrap.getPosition().y;
 			if (spikeTrap.getPosition().y < startingPos + spikeTrapMoveRange)
 			{
-				spikeTrap.move(0.f, -5.f);
+				spikeTrap.move(0.f, -10.f);
 			}
-			else if (spikeTrap.getPosition().y >= startingPos + spikeTrapMoveRange)
+			else 
 			{
 				spikeTrap.move(0.f, 2.f);
 				if (startingPos = spikeTrap.getPosition().y)
