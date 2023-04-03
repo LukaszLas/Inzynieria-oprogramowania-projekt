@@ -52,6 +52,7 @@ void Game::initObjects()
 	this->spikeTrap.setSize(sf::Vector2f(30.f, 19.f));
 	this->spikeTrap.setPosition(400.f, 700.f);
 	this->spikeTraps.push_back(this->spikeTrap);
+	startingpos = spikeTrap.getPosition().y;
 }                              
 
 void Game::initTexture()
@@ -258,48 +259,22 @@ void Game::moveCharacter()
 	}
 	for (auto& abyss : abysses)
 	{
-		sf::FloatRect characterBounds = character.getGlobalBounds();
 		sf::FloatRect abyssBounds = abyss.getGlobalBounds();
 
 		if (abyssBounds.intersects(nextPos))
 		{
-			//abyss bottom collision
-			if (characterBounds.top < abyssBounds.top
-				&& characterBounds.top + characterBounds.height < abyssBounds.top + abyssBounds.height
-				&& characterBounds.left < abyssBounds.left + abyssBounds.width
-				&& characterBounds.left + characterBounds.width > abyssBounds.left)
-			{
-				this->deathCounter++;
-				this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
-				character.setPosition(65.f, 825.f);
-			}
-			//right collision
-			else if (characterBounds.left < abyssBounds.left
-				&& characterBounds.left + characterBounds.width < abyssBounds.left + abyssBounds.width
-				&& characterBounds.top < abyssBounds.top + abyssBounds.height
-				&& characterBounds.top + characterBounds.height > abyssBounds.top)
-			{
-				this->deathCounter++;
-				this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
-				character.setPosition(65.f, 825.f);
-			}
-			//left collision
-			else if (characterBounds.left > abyssBounds.left
-				&& characterBounds.left + characterBounds.width > abyssBounds.left + abyssBounds.width
-				&& characterBounds.top < abyssBounds.top + abyssBounds.height
-				&& characterBounds.top + characterBounds.height > abyssBounds.top)
-			{
-				this->deathCounter++;
-				this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
-				character.setPosition(65.f, 825.f);
-			}
+			this->deathCounter++;
+			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
+			character.setPosition(65.f, 825.f);
 		}
 
 	}
 	//enemy collision
 	sf::FloatRect movingEnemyBounds = movingEnemy.getGlobalBounds();
-	if (movingEnemyBounds.intersects(this->character.getGlobalBounds()))
+	if (movingEnemyBounds.intersects(nextPos))
 	{
+		this->deathCounter++;
+		this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 		character.setPosition(65.f, 825.f);
 	}
 
@@ -367,21 +342,43 @@ void Game::moveSpikeTrap()
 		this->spikeTrapTimer++;
 	else
 	{
-		for (auto& spikeTrap : spikeTraps)
+		if (spikeTrap.getPosition().y < startingpos + spikeTrapMoveRange && moveUp)
 		{
-			float startingPos = spikeTrap.getPosition().y;
-			if (spikeTrap.getPosition().y < startingPos + spikeTrapMoveRange)
+			for (auto& spikeTrap : spikeTraps)
 			{
 				spikeTrap.move(0.f, -10.f);
 			}
-			else 
+		}
+		else
+		{
+			if (spikeTrap.getPosition().y <= startingpos)
+			{
+				spikeTrapTimer = 0;
+				moveUp = true;
+			}
+			moveUp = false;
+			for (auto& spikeTrap : spikeTraps)
 			{
 				spikeTrap.move(0.f, 2.f);
-				if (startingPos = spikeTrap.getPosition().y)
-				{
-					this->spikeTrapTimer = 0;
-				}
 			}
 		}
+		//for (auto& spiketrap : spiketraps)
+		//{
+		//	float startingpos = spiketrap.getposition().y;
+		//	if (spiketrap.getposition().y < startingpos + spiketrapmoverange && moveup)
+		//	{
+		//		spiketrap.move(0.f, -10.f);
+		//	}
+		//	else //if (spiketrap.getposition().y >= startingpos + spiketrapmoverange)
+		//	{
+		//		moveup = false;
+		//		spiketrap.move(0.f, 2.f);
+		//		if (startingpos = spiketrap.getposition().y)
+		//		{
+		//			moveup = true;
+		//			this->spiketraptimer = 0;
+		//		}
+		//	}
+		//}
 	}
 }

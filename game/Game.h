@@ -64,6 +64,8 @@ private:
 	int deathCounter = 0;
 	int spikeTrapTimer = 0;
 	float spikeTrapMoveRange = 20;
+	bool moveUp = true;
+	float startingpos;
 
 public:
 	Game();
