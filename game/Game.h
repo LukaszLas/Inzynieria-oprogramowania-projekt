@@ -16,17 +16,20 @@ private:
 	//Game objects
 	sf::RectangleShape character;
 	vector<sf::RectangleShape> platforms;
-	vector<sf::RectangleShape> abysses;
 	sf::RectangleShape platform;
+	vector<sf::RectangleShape> abysses;
 	sf::RectangleShape abyss;
-	sf::RectangleShape movingEnemy;
 	vector<sf::RectangleShape> movingEnemys;
+	sf::RectangleShape movingEnemy;
+	vector<sf::RectangleShape> spikeTraps;
+	sf::RectangleShape spikeTrap;
 	sf::Sprite sprite;
 	sf::Sprite enemySprite;
 	sf::Texture texture;
 	sf::Texture movingEnemyTexture;
 	sf::Font font;
-	sf::Text text;
+	sf::Text deathCounterText;
+
 	//Image
 	
 	//Initialization
@@ -38,8 +41,8 @@ private:
 	void createPlatform(float sizeX, float sizeY, float positionX, float positionY);
 	void initSprite();
 	void initEnemies();
-	//void initFont();
-	//void initText();
+	void initFont();
+	void initText();
 
 	//Variable
 	sf::Vector2f velocity;
@@ -58,6 +61,10 @@ private:
 	float enemyStartPositionX = 650;
 	float enemyStartPositionY = 1020;
 	bool moveRight = true;
+	int deathCounter = 0;
+	int spikeTrapTimer = 0;
+	float spikeTrapMoveRange = 20;
+
 public:
 	Game();
 	virtual ~Game();
@@ -68,6 +75,7 @@ public:
 	void render();
 	void moveCharacter();
 	void moveEnemy();
+	void moveSpikeTrap();
 	float getDT() { return dt; }
 	sf::IntRect uvRect;
 };

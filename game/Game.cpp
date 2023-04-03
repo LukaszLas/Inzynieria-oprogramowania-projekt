@@ -43,9 +43,15 @@ void Game::initObjects()
 	createPlatform(100, 20, 50, 950);
 
 	this->abyss.setFillColor(sf::Color::Red);
-	this->abyss.setSize(sf::Vector2f(200.f, 10.f));
+	this->abyss.setSize(sf::Vector2f(200.f, 9.f));
 	this->abyss.setPosition(150.f, 1070.f);
 	this->abysses.push_back(this->abyss);
+
+	
+	this->spikeTrap.setFillColor(sf::Color::Magenta);
+	this->spikeTrap.setSize(sf::Vector2f(30.f, 19.f));
+	this->spikeTrap.setPosition(400.f, 700.f);
+	this->spikeTraps.push_back(this->spikeTrap);
 }                              
 
 void Game::initTexture()
@@ -59,8 +65,6 @@ void Game::initTexture()
 		cout << "Error initTexture";
 	}
 }
-
-
 
 void Game::createPlatform(float sizeX, float sizeY, float positionX, float positionY)
 {
@@ -76,23 +80,22 @@ void Game::initSprite()
 	this->enemySprite.setTexture(this->movingEnemyTexture);
 }
 
-//void Game::initFont()
-//{
-//	if (!this->font.loadFromFile("Fonts/arial.ttf"))
-//	{
-//		cout << "Error initFont";
-//	}
-//}
+void Game::initFont()
+{
+	if (!this->font.loadFromFile("Fonts/arial.ttf"))
+	{
+		cout << "Error initFont";
+	}
+}
 
-//void Game::initText()
-//{
-//	this->text.setFont(font);
-//	this->text.setString("Deaths: ");
-//	this->text.setCharacterSize(50);
-//	this->text.setStyle(sf::Text::Bold);
-//	this->text.setPosition(1800.f, 1050.f);
-//
-//}
+void Game::initText()
+{
+	this->deathCounterText.setFont(font);
+	this->deathCounterText.setCharacterSize(30);
+	this->deathCounterText.setStyle(sf::Text::Bold);
+	this->deathCounterText.setPosition(1750.f, 1025.f);
+	this->deathCounterText.setString("Deaths: 0");
+}
 
 
 //Constructors /Destructor
@@ -103,8 +106,8 @@ Game::Game()
 	this->initCharacter();
 	this->initEnemies();
 	this->initObjects();
-	//this->initFont();
-	//this->initText();
+	this->initFont();
+	this->initText();
 }
 
 Game::~Game()
@@ -148,7 +151,10 @@ void Game::render()
 	//draw game objects
 	this->window->draw(this->character);
 	this->window->draw(this->movingEnemy);
-	//this->window->draw(this->text);
+	for (auto& i : this->spikeTraps)
+	{
+		this->window->draw(i);
+	}
 	for (auto& i : this->abysses)
 	{
 		this->window->draw(i);
@@ -157,6 +163,9 @@ void Game::render()
 	{
 		this->window->draw(i);
 	}
+
+	//draw UI
+	this->window->draw(this->deathCounterText);
 
 	this->window->display();
 }
@@ -259,6 +268,8 @@ void Game::moveCharacter()
 				&& characterBounds.left < abyssBounds.left + abyssBounds.width
 				&& characterBounds.left + characterBounds.width > abyssBounds.left)
 			{
+				this->deathCounter++;
+				this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 				character.setPosition(65.f, 825.f);
 			}
 			//right collision
@@ -267,6 +278,8 @@ void Game::moveCharacter()
 				&& characterBounds.top < abyssBounds.top + abyssBounds.height
 				&& characterBounds.top + characterBounds.height > abyssBounds.top)
 			{
+				this->deathCounter++;
+				this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 				character.setPosition(65.f, 825.f);
 			}
 			//left collision
@@ -275,6 +288,8 @@ void Game::moveCharacter()
 				&& characterBounds.top < abyssBounds.top + abyssBounds.height
 				&& characterBounds.top + characterBounds.height > abyssBounds.top)
 			{
+				this->deathCounter++;
+				this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 				character.setPosition(65.f, 825.f);
 			}
 		}
@@ -335,5 +350,30 @@ void Game::moveEnemy()
 	if (movingEnemy.getPosition().y + movingEnemy.getGlobalBounds().height > this->window_height)
 	{
 		movingEnemy.setPosition(movingEnemy.getPosition().x, this->window_height - movingEnemy.getGlobalBounds().height);
+	}
+}
+
+void Game::moveSpikeTrap()
+{
+	if (this->spikeTrapTimer < 50)
+		this->spikeTrapTimer++;
+	else
+	{
+		for (auto& spikeTrap : spikeTraps)
+		{
+			float startingPos = spikeTrap.getPosition().y;
+			if (spikeTrap.getPosition().y < startingPos + spikeTrapMoveRange)
+			{
+				spikeTrap.move(0.f, -5.f);
+			}
+			else if (spikeTrap.getPosition().y >= startingPos + spikeTrapMoveRange)
+			{
+				spikeTrap.move(0.f, 2.f);
+				if (startingPos = spikeTrap.getPosition().y)
+				{
+					this->spikeTrapTimer = 0;
+				}
+			}
+		}
 	}
 }
