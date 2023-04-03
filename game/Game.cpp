@@ -295,6 +295,12 @@ void Game::moveCharacter()
 		}
 
 	}
+	//enemy collision
+	sf::FloatRect movingEnemyBounds = movingEnemy.getGlobalBounds();
+	if (movingEnemyBounds.intersects(this->character.getGlobalBounds()))
+	{
+		character.setPosition(65.f, 825.f);
+	}
 
 	character.move(velocity);
 	this->velocity.x = 0.0f;
@@ -320,6 +326,7 @@ void Game::moveCharacter()
 
 void Game::moveEnemy()
 {
+	
 	
 	if (movingEnemy.getPosition().x < enemyMoveRangeRight + enemyStartPositionX && moveRight)
 	{
