@@ -278,6 +278,20 @@ void Game::moveCharacter()
 		character.setPosition(65.f, 825.f);
 	}
 
+	//spike trap collision
+	for (auto& spikeTrap : spikeTraps)
+	{
+		sf::FloatRect spikeTrapBounds = spikeTrap.getGlobalBounds();
+
+		if (spikeTrapBounds.intersects(nextPos))
+		{
+			this->deathCounter++;
+			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
+			character.setPosition(65.f, 825.f);
+		}
+
+	}
+
 	character.move(velocity);
 	this->velocity.x = 0.0f;
 	//screen collision
@@ -342,43 +356,23 @@ void Game::moveSpikeTrap()
 		this->spikeTrapTimer++;
 	else
 	{
-		if (spikeTrap.getPosition().y < startingpos + spikeTrapMoveRange && moveUp)
+		for (auto& spikeTrap : spikeTraps)
 		{
-			for (auto& spikeTrap : spikeTraps)
+			if (spikeTrap.getPosition().y > startingpos - spikeTrapMoveRange && this->moveUp)
 			{
-				spikeTrap.move(0.f, -10.f);
+				spikeTrap.move(0.f, -5.f);
+			}
+			else 
+			{
+				if (spikeTrap.getPosition().y == startingpos)
+				{
+					spikeTrapTimer = 0;
+					moveUp = true;
+					break;
+				}
+				moveUp = false;
+				spikeTrap.move(0.f, 0.5);
 			}
 		}
-		else
-		{
-			if (spikeTrap.getPosition().y <= startingpos)
-			{
-				spikeTrapTimer = 0;
-				moveUp = true;
-			}
-			moveUp = false;
-			for (auto& spikeTrap : spikeTraps)
-			{
-				spikeTrap.move(0.f, 2.f);
-			}
-		}
-		//for (auto& spiketrap : spiketraps)
-		//{
-		//	float startingpos = spiketrap.getposition().y;
-		//	if (spiketrap.getposition().y < startingpos + spiketrapmoverange && moveup)
-		//	{
-		//		spiketrap.move(0.f, -10.f);
-		//	}
-		//	else //if (spiketrap.getposition().y >= startingpos + spiketrapmoverange)
-		//	{
-		//		moveup = false;
-		//		spiketrap.move(0.f, 2.f);
-		//		if (startingpos = spiketrap.getposition().y)
-		//		{
-		//			moveup = true;
-		//			this->spiketraptimer = 0;
-		//		}
-		//	}
-		//}
 	}
 }
