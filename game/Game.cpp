@@ -6,7 +6,6 @@ void Game::initVariable()
 	sf::Vector2f velocity(sf::Vector2f(0, 0));
 	const float window_width = 1920;
 	const float window_height = 1080;
-
 }
 
 void Game::initWindow()
@@ -27,13 +26,28 @@ void Game::initCharacter()
 }
 void Game::initEnemies()
 {
-	this->movingEnemy.setPosition(enemyStartPositionX,enemyStartPositionY);
+	this->movingEnemy.setPosition(650,1250);
 	this->initTexture();
 	this->initSprite();
 	this->movingEnemy.setSize(sf::Vector2f(60.f, 60.f));
 	this->movingEnemy.setTexture(&movingEnemyTexture);
-	float enemyMoveRangeRight = 50;
-	float enemyMoveRangeLeft = 50;
+	this->enemyMoveRangeRight = 400;
+	this->enemyMoveRangeLeft = 400;
+	this->enemyStartPositionX = this->movingEnemy.getPosition().x;
+	movingEnemys.push_back(this->movingEnemy);
+	//createMovingEnemies(200, 200, 100, 100);
+}
+void Game::createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft)
+{
+	this->movingEnemy.setPosition(positionX, positionY);
+	this->initTexture();
+	this->initSprite();
+	this->movingEnemy.setSize(sf::Vector2f(60.f, 60.f));
+	this->movingEnemy.setTexture(&movingEnemyTexture);
+	this->enemyMoveRangeRight = moveRangeRight;
+	this->enemyMoveRangeLeft = moveRangeLeft;
+	this->enemyStartPositionX = this->movingEnemy.getPosition().x;
+	movingEnemys.push_back(this->movingEnemy);
 }
 void Game::initObjects()
 {
@@ -94,11 +108,19 @@ void Game::initText()
 	this->deathCounterText.setFont(font);
 	this->deathCounterText.setCharacterSize(30);
 	this->deathCounterText.setStyle(sf::Text::Bold);
-	this->deathCounterText.setPosition(1750.f, 1025.f);
+	this->deathCounterText.setPosition(20.f, 80.f);
 	this->deathCounterText.setString("Deaths: 0");
 }
 
+void Game::initTimerText()
+{
+	this->TimerText.setFont(font);
+	this->TimerText.setCharacterSize(30);
+	this->TimerText.setStyle(sf::Text::Bold);
+	this->TimerText.setPosition(20.f, 40.f);
+	
 
+}
 //Constructors /Destructor
 Game::Game()
 {
@@ -109,6 +131,7 @@ Game::Game()
 	this->initObjects();
 	this->initFont();
 	this->initText();
+	this->initTimerText();
 }
 
 Game::~Game()
@@ -128,6 +151,9 @@ void Game::update()
 	moveCharacter();
 	moveEnemy();
 	moveSpikeTrap();
+	clock_t timeStop = clock();
+	duration = static_cast<float>(timeStop - timeStart) / CLOCKS_PER_SEC;
+	TimerText.setString(to_string(duration));
 }
 
 void Game::pollEvents()
@@ -165,9 +191,13 @@ void Game::render()
 	{
 		this->window->draw(i);
 	}
-
+	for (auto& i : this->movingEnemys)
+	{
+		this->window->draw(i);
+	}
 	//draw UI
 	this->window->draw(this->deathCounterText);
+	this->window->draw(this->TimerText);
 
 	this->window->display();
 }
@@ -181,16 +211,16 @@ void Game::moveCharacter()
 	this->character.setSize(sf::Vector2f(50.f, 50.f));
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		this->velocity.x -= moveSpeed*this->getDT();
+		this->velocity.x -= moveSpeed * this->getDT();
 		this->characterRightGoing = false;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		this->velocity.x += moveSpeed*this->getDT();
+		this->velocity.x += moveSpeed * this->getDT();
 		this->characterRightGoing = true;
 
 	}
-	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) && (this->canJump==true))
+	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) && (this->canJump == true))
 	{
 		this->canJump = false;
 		this->velocity.y = -sqrt(2.0f * gravity * jumpHeight);
@@ -201,61 +231,61 @@ void Game::moveCharacter()
 	}
 	this->velocity.y += gravity * dt;
 
-	if(this->characterRightGoing)
+	if (this->characterRightGoing)
 		this->texture.loadFromFile("Images/image.png");
 	else
 		this->texture.loadFromFile("Images/imageL.png");
 
 	//objects collision
-	for (auto &platform : platforms)
+	for (auto& platform : platforms)
 	{
-			sf::FloatRect characterBounds = character.getGlobalBounds();
-			sf::FloatRect platformBounds = platform.getGlobalBounds();
-			sf::FloatRect abyssBounds = abyss.getGlobalBounds();
-			nextPos = characterBounds;
-			nextPos.left += velocity.x;
-			nextPos.top += velocity.y;
+		sf::FloatRect characterBounds = character.getGlobalBounds();
+		sf::FloatRect platformBounds = platform.getGlobalBounds();
+		sf::FloatRect abyssBounds = abyss.getGlobalBounds();
+		nextPos = characterBounds;
+		nextPos.left += velocity.x;
+		nextPos.top += velocity.y;
 
-			if (platformBounds.intersects(nextPos))
+		if (platformBounds.intersects(nextPos))
+		{
+			//bottom collision
+			if (characterBounds.top < platformBounds.top
+				&& characterBounds.top + characterBounds.height < platformBounds.top + platformBounds.height
+				&& characterBounds.left < platformBounds.left + platformBounds.width
+				&& characterBounds.left + characterBounds.width > platformBounds.left)
 			{
-				//bottom collision
-				if (characterBounds.top < platformBounds.top
-					&& characterBounds.top + characterBounds.height < platformBounds.top + platformBounds.height
-					&& characterBounds.left < platformBounds.left + platformBounds.width
-					&& characterBounds.left + characterBounds.width > platformBounds.left)
-				{
-					velocity.y = 0.f;
-					this->canJump = true;
-					character.setPosition(characterBounds.left, platformBounds.top - characterBounds.height);
-				}
-				//top collision
-				else if (characterBounds.top > platformBounds.top
-					&& characterBounds.top + characterBounds.height > platformBounds.top + platformBounds.height
-					&& characterBounds.left < platformBounds.left + platformBounds.width
-					&& characterBounds.left + characterBounds.width > platformBounds.left)
-				{
-					velocity.y = 0.f;
-					character.setPosition(characterBounds.left, platformBounds.top + platformBounds.height);
-				}
-				//right collision
-				else if (characterBounds.left < platformBounds.left
-					&& characterBounds.left + characterBounds.width < platformBounds.left + platformBounds.width
-					&& characterBounds.top < platformBounds.top + platformBounds.height
-					&& characterBounds.top + characterBounds.height > platformBounds.top)
-				{
-					velocity.x = 0.f;
-					character.setPosition(platformBounds.left - characterBounds.width, characterBounds.top);
-				}
-				//left collision
-				else if (characterBounds.left > platformBounds.left
-					&& characterBounds.left + characterBounds.width > platformBounds.left + platformBounds.width
-					&& characterBounds.top < platformBounds.top + platformBounds.height
-					&& characterBounds.top + characterBounds.height > platformBounds.top)
-				{
-					velocity.x = 0.f;
-					character.setPosition(platformBounds.left + platformBounds.width, characterBounds.top);
-				}
+				velocity.y = 0.f;
+				this->canJump = true;
+				character.setPosition(characterBounds.left, platformBounds.top - characterBounds.height);
 			}
+			//top collision
+			else if (characterBounds.top > platformBounds.top
+				&& characterBounds.top + characterBounds.height > platformBounds.top + platformBounds.height
+				&& characterBounds.left < platformBounds.left + platformBounds.width
+				&& characterBounds.left + characterBounds.width > platformBounds.left)
+			{
+				velocity.y = 0.f;
+				character.setPosition(characterBounds.left, platformBounds.top + platformBounds.height);
+			}
+			//right collision
+			else if (characterBounds.left < platformBounds.left
+				&& characterBounds.left + characterBounds.width < platformBounds.left + platformBounds.width
+				&& characterBounds.top < platformBounds.top + platformBounds.height
+				&& characterBounds.top + characterBounds.height > platformBounds.top)
+			{
+				velocity.x = 0.f;
+				character.setPosition(platformBounds.left - characterBounds.width, characterBounds.top);
+			}
+			//left collision
+			else if (characterBounds.left > platformBounds.left
+				&& characterBounds.left + characterBounds.width > platformBounds.left + platformBounds.width
+				&& characterBounds.top < platformBounds.top + platformBounds.height
+				&& characterBounds.top + characterBounds.height > platformBounds.top)
+			{
+				velocity.x = 0.f;
+				character.setPosition(platformBounds.left + platformBounds.width, characterBounds.top);
+			}
+		}
 	}
 	for (auto& abyss : abysses)
 	{
@@ -265,31 +295,35 @@ void Game::moveCharacter()
 		{
 			this->deathCounter++;
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
+			this->timeStart = clock();
 			character.setPosition(65.f, 825.f);
 		}
 
 	}
 	//enemy collision
-	sf::FloatRect movingEnemyBounds = movingEnemy.getGlobalBounds();
-	if (movingEnemyBounds.intersects(nextPos))
+	for (auto& movingEnemy : movingEnemys)
 	{
-		this->deathCounter++;
-		this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
-		character.setPosition(65.f, 825.f);
+		sf::FloatRect movingEnemyBounds = movingEnemy.getGlobalBounds();
+		if (movingEnemyBounds.intersects(character.getGlobalBounds()))
+		{
+			this->deathCounter++;
+			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
+			this->timeStart = clock();
+			character.setPosition(65.f, 825.f);
+		}
 	}
-
 	//spike trap collision
 	for (auto& spikeTrap : spikeTraps)
 	{
 		sf::FloatRect spikeTrapBounds = spikeTrap.getGlobalBounds();
 
-		if (spikeTrapBounds.intersects(nextPos))
+		if (spikeTrapBounds.intersects(character.getGlobalBounds()))
 		{
 			this->deathCounter++;
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
+			this->timeStart = clock();
 			character.setPosition(65.f, 825.f);
 		}
-
 	}
 
 	character.move(velocity);
@@ -316,37 +350,40 @@ void Game::moveCharacter()
 
 void Game::moveEnemy()
 {
-	
-	
-	if (movingEnemy.getPosition().x < enemyMoveRangeRight + enemyStartPositionX && moveRight)
+	for (auto& movingEnemy : movingEnemys)
 	{
-		movingEnemy.move(5, 0);
-		this->movingEnemyTexture.loadFromFile("Images/cavemanL.png");
-	}
-	else
-	{
-		moveRight = false;
-		movingEnemy.move(-5, 0);
-		this->movingEnemyTexture.loadFromFile("Images/cavemanR.png");
-	}
-	if (movingEnemy.getPosition().x < enemyStartPositionX - enemyMoveRangeLeft)
-		moveRight = true;
 
-	if (movingEnemy.getPosition().x < 0.f)
-	{
-		movingEnemy.setPosition(0.f, movingEnemy.getPosition().y);
-	}
-	if (movingEnemy.getPosition().y < 0.f)
-	{
-		movingEnemy.setPosition(movingEnemy.getPosition().x, 0.f);
-	}
-	if (movingEnemy.getPosition().x + movingEnemy.getGlobalBounds().width > this->window_width)
-	{
-		movingEnemy.setPosition(this->window_width - movingEnemy.getGlobalBounds().width, movingEnemy.getPosition().y);
-	}
-	if (movingEnemy.getPosition().y + movingEnemy.getGlobalBounds().height > this->window_height)
-	{
-		movingEnemy.setPosition(movingEnemy.getPosition().x, this->window_height - movingEnemy.getGlobalBounds().height);
+		if (movingEnemy.getPosition().x < enemyMoveRangeRight + enemyStartPositionX && moveRight)
+		{
+			movingEnemy.move(5, 0);
+			this->movingEnemyTexture.loadFromFile("Images/cavemanL.png");
+		}
+		else
+		{
+			moveRight = false;
+			movingEnemy.move(-5, 0);
+			this->movingEnemyTexture.loadFromFile("Images/cavemanR.png");
+		}
+		if (movingEnemy.getPosition().x < enemyStartPositionX - enemyMoveRangeLeft)
+			moveRight = true;
+
+		if (movingEnemy.getPosition().x < 0.f)
+		{
+			movingEnemy.setPosition(0.f, movingEnemy.getPosition().y);
+		}
+		if (movingEnemy.getPosition().y < 0.f)
+		{
+			movingEnemy.setPosition(movingEnemy.getPosition().x, 0.f);
+		}
+		if (movingEnemy.getPosition().x + movingEnemy.getGlobalBounds().width > this->window_width)
+		{
+			movingEnemy.setPosition(this->window_width - movingEnemy.getGlobalBounds().width, movingEnemy.getPosition().y);
+		}
+		if (movingEnemy.getPosition().y + movingEnemy.getGlobalBounds().height > this->window_height)
+		{
+			movingEnemy.setPosition(movingEnemy.getPosition().x, this->window_height - movingEnemy.getGlobalBounds().height);
+		}
+
 	}
 }
 
