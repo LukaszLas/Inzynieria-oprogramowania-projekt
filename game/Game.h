@@ -16,12 +16,18 @@ private:
 
 	//Game objects
 	sf::RectangleShape character;
+	sf::Sprite platformSprite;
+	sf::Texture platformTexture;
 	vector<sf::RectangleShape> platforms;
 	sf::RectangleShape platform;
+	sf::Sprite abyssSprite;
+	sf::Texture abyssTexture;
 	vector<sf::RectangleShape> abysses;
 	sf::RectangleShape abyss;
 	vector<sf::RectangleShape> movingEnemys;
 	sf::RectangleShape movingEnemy ;
+	sf::Sprite spikesSprite;
+	sf::Texture spikesTexture;
 	vector<sf::RectangleShape> spikeTraps;
 	sf::RectangleShape spikeTrap;
 	sf::Sprite sprite;

@@ -56,15 +56,17 @@ void Game::initObjects()
 	createPlatform(100, 20, 370, 700);
 	createPlatform(100, 20, 50, 950);
 
-	this->abyss.setFillColor(sf::Color::Red);
+	//this->abyss.setFillColor(sf::Color::Red);
 	this->abyss.setSize(sf::Vector2f(200.f, 9.f));
 	this->abyss.setPosition(150.f, 1070.f);
+	this->abyss.setTexture(&abyssTexture);
 	this->abysses.push_back(this->abyss);
 
 	
-	this->spikeTrap.setFillColor(sf::Color::Magenta);
+	//this->spikeTrap.setFillColor(sf::Color::Magenta);
 	this->spikeTrap.setSize(sf::Vector2f(30.f, 19.f));
 	this->spikeTrap.setPosition(400.f, 700.f);
+	this->spikeTrap.setTexture(&spikesTexture);
 	this->spikeTraps.push_back(this->spikeTrap);
 	startingpos = spikeTrap.getPosition().y;
 }                              
@@ -79,13 +81,25 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->platformTexture.loadFromFile("Images/platform.png"))
+	{
+		cout << "Error initTexture";
+	}
+	if (!this->abyssTexture.loadFromFile("Images/abyss.png"))
+	{
+		cout << "Error initTexture";
+	}
+	if (!this->spikesTexture.loadFromFile("Images/spikes.png"))
+	{
+		cout << "Error initTexture";
+	}
 }
 
 void Game::createPlatform(float sizeX, float sizeY, float positionX, float positionY)
 {
-	this->platform.setFillColor(sf::Color::Green);
 	this->platform.setSize(sf::Vector2f(sizeX, sizeY));
 	this->platform.setPosition(positionX, positionY);
+	this->platform.setTexture(&platformTexture);
 	this->platforms.push_back(this->platform);
 }
 
@@ -93,6 +107,9 @@ void Game::initSprite()
 {
 	this->sprite.setTexture(this->texture);
 	this->enemySprite.setTexture(this->movingEnemyTexture);
+	this->platformSprite.setTexture(this->platformTexture);
+	this->abyssSprite.setTexture(this->abyssTexture);
+	this->spikesSprite.setTexture(this->spikesTexture);
 }
 
 void Game::initFont()
