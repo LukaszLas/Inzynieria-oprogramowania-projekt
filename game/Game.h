@@ -15,11 +15,16 @@ private:
 	sf::Event ev;
 
 	//Game objects
+	//Character
 	sf::RectangleShape character;
+	sf::Texture texture;
+	sf::Sprite sprite;
+	//Platforms
 	sf::Sprite platformSprite;
 	sf::Texture platformTexture;
 	vector<sf::RectangleShape> platforms;
 	sf::RectangleShape platform;
+	//Enemies
 	sf::Sprite abyssSprite;
 	sf::Texture abyssTexture;
 	vector<sf::RectangleShape> abysses;
@@ -30,14 +35,14 @@ private:
 	sf::Texture spikesTexture;
 	vector<sf::RectangleShape> spikeTraps;
 	sf::RectangleShape spikeTrap;
-	sf::Sprite sprite;
 	sf::Sprite enemySprite;
-	sf::Texture texture;
 	sf::Texture movingEnemyTexture;
+	//UI
 	sf::Font font;
 	sf::Text deathCounterText;
 	sf::Text TimerText;
-
+	sf::Texture backgroundTexture;
+	sf::Sprite backgroundSprite;
 	//Image
 	
 	//Initialization
@@ -50,6 +55,8 @@ private:
 	void initSprite();
 	void initEnemies();
 	void createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft);
+	void createSpikeTrap(float sizeX, float positionX, float positionY);
+	void createAbyss(float sizeX, float sizeY, float positionX, float positionY);
 	void initFont();
 	void initText();
 	void initTimerText();

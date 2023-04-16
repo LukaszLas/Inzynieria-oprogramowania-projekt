@@ -31,8 +31,8 @@ void Game::initEnemies()
 	this->initSprite();
 	this->movingEnemy.setSize(sf::Vector2f(60.f, 60.f));
 	this->movingEnemy.setTexture(&movingEnemyTexture);
-	this->enemyMoveRangeRight = 400;
-	this->enemyMoveRangeLeft = 400;
+	this->enemyMoveRangeRight = 200;
+	this->enemyMoveRangeLeft = 200;
 	this->enemyStartPositionX = this->movingEnemy.getPosition().x;
 	movingEnemys.push_back(this->movingEnemy);
 	//createMovingEnemies(200, 200, 100, 100);
@@ -55,13 +55,16 @@ void Game::initObjects()
 	createPlatform(100, 20, 250, 850);
 	createPlatform(100, 20, 370, 700);
 	createPlatform(100, 20, 50, 950);
+	createPlatform(1920, 7, 0, 1073);
+	createPlatform(150, 20, 520, 550);
+	//createSpikeTrap(30, 400, 700);
 
 	//this->abyss.setFillColor(sf::Color::Red);
-	this->abyss.setSize(sf::Vector2f(200.f, 9.f));
-	this->abyss.setPosition(150.f, 1070.f);
-	this->abyss.setTexture(&abyssTexture);
-	this->abysses.push_back(this->abyss);
-
+	//this->abyss.setSize(sf::Vector2f(200.f, 9.f));
+	//this->abyss.setPosition(150.f, 1070.f);
+	//this->abyss.setTexture(&abyssTexture);
+	//this->abysses.push_back(this->abyss);
+	createAbyss(200, 9, 150, 1070);
 	
 	//this->spikeTrap.setFillColor(sf::Color::Magenta);
 	this->spikeTrap.setSize(sf::Vector2f(30.f, 19.f));
@@ -69,8 +72,30 @@ void Game::initObjects()
 	this->spikeTrap.setTexture(&spikesTexture);
 	this->spikeTraps.push_back(this->spikeTrap);
 	startingpos = spikeTrap.getPosition().y;
-}                              
+}     
 
+void Game::createPlatform(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->platform.setSize(sf::Vector2f(sizeX, sizeY));
+	this->platform.setPosition(positionX, positionY);
+	this->platform.setTexture(&platformTexture);
+	this->platforms.push_back(this->platform);
+}
+void Game::createAbyss(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->abyss.setSize(sf::Vector2f(sizeX, sizeY));
+	this->abyss.setPosition(positionX, positionY);
+	this->abyss.setTexture(&abyssTexture);
+	this->abysses.push_back(this->abyss);
+}
+void Game::createSpikeTrap(float sizeX, float positionX, float positionY)
+{
+	this->spikeTrap.setSize(sf::Vector2f(sizeX, 19.f));
+	this->spikeTrap.setPosition(positionX, positionY);
+	this->spikeTrap.setTexture(&spikesTexture);
+	this->spikeTraps.push_back(this->spikeTrap);
+	startingpos = spikeTrap.getPosition().y;
+}
 void Game::initTexture()
 {
 	if (!this->texture.loadFromFile("Images/image.png"))
@@ -93,15 +118,12 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->backgroundTexture.loadFromFile("Images/background.png"))
+	{
+		cout << "Error initTexture";
+	}
 }
 
-void Game::createPlatform(float sizeX, float sizeY, float positionX, float positionY)
-{
-	this->platform.setSize(sf::Vector2f(sizeX, sizeY));
-	this->platform.setPosition(positionX, positionY);
-	this->platform.setTexture(&platformTexture);
-	this->platforms.push_back(this->platform);
-}
 
 void Game::initSprite()
 {
@@ -110,6 +132,7 @@ void Game::initSprite()
 	this->platformSprite.setTexture(this->platformTexture);
 	this->abyssSprite.setTexture(this->abyssTexture);
 	this->spikesSprite.setTexture(this->spikesTexture);
+	this->backgroundSprite.setTexture(this->backgroundTexture);
 }
 
 void Game::initFont()
@@ -194,17 +217,18 @@ void Game::render()
 {
 	this->window->clear();
 	//draw game objects
+	this->window->draw(backgroundSprite);
 	this->window->draw(this->character);
 	this->window->draw(this->movingEnemy);
 	for (auto& i : this->spikeTraps)
 	{
 		this->window->draw(i);
 	}
-	for (auto& i : this->abysses)
+	for (auto& i : this->platforms)
 	{
 		this->window->draw(i);
 	}
-	for (auto& i : this->platforms)
+	for (auto& i : this->abysses)
 	{
 		this->window->draw(i);
 	}
