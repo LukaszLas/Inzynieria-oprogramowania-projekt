@@ -371,7 +371,7 @@ void Game::moveSpikeTrap()
 					break;
 				}
 				moveUp = false;
-				spikeTrap.move(0.f, 0.5);
+				spikeTrap.move(0.f, 0.5f);
 			}
 		}
 	}
