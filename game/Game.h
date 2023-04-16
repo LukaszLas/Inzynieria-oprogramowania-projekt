@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/Window.hpp"
 #include "SFML/System.hpp"
+#include <ctime>
 #include <iostream>
 using namespace std;
 
@@ -20,7 +21,7 @@ private:
 	vector<sf::RectangleShape> abysses;
 	sf::RectangleShape abyss;
 	vector<sf::RectangleShape> movingEnemys;
-	sf::RectangleShape movingEnemy;
+	sf::RectangleShape movingEnemy ;
 	vector<sf::RectangleShape> spikeTraps;
 	sf::RectangleShape spikeTrap;
 	sf::Sprite sprite;
@@ -29,6 +30,7 @@ private:
 	sf::Texture movingEnemyTexture;
 	sf::Font font;
 	sf::Text deathCounterText;
+	sf::Text TimerText;
 
 	//Image
 	
@@ -41,8 +43,10 @@ private:
 	void createPlatform(float sizeX, float sizeY, float positionX, float positionY);
 	void initSprite();
 	void initEnemies();
+	void createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft);
 	void initFont();
 	void initText();
+	void initTimerText();
 
 	//Variable
 	sf::Vector2f velocity;
@@ -56,11 +60,12 @@ private:
 	const float window_width = 1920;
 	const float window_height = 1080;
 	sf::FloatRect nextPos;
-	float enemyMoveRangeRight = 250;
-	float enemyMoveRangeLeft = 250;
-	float enemyStartPositionX = 650;
-	float enemyStartPositionY = 1020;
+	float enemyMoveRangeRight;
+	float enemyMoveRangeLeft;
+	float enemyStartPositionX;
 	bool moveRight = true;
+	float duration;
+	clock_t timeStart =clock();
 	int deathCounter = 0;
 	int spikeTrapTimer = 0;
 	float spikeTrapMoveRange = 20;
