@@ -161,6 +161,21 @@ void Game::initTimerText()
 	
 
 }
+void Game::initAudio()
+{
+	if (!this->jumpBuffer.loadFromFile("Audio/jump.wav"))
+	{
+		cout << "Error initAudio";
+	}
+}
+
+void Game::initSound()
+{
+	this->jumpSound.setBuffer(this->jumpBuffer);
+}
+
+
+
 //Constructors /Destructor
 Game::Game()
 {
@@ -172,6 +187,7 @@ Game::Game()
 	this->initFont();
 	this->initText();
 	this->initTimerText();
+	
 }
 
 Game::~Game()
@@ -265,6 +281,7 @@ void Game::moveCharacter()
 	{
 		this->canJump = false;
 		this->velocity.y = -sqrt(2.0f * gravity * jumpHeight);
+		this->jumpSound.play();
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{

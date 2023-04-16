@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/Window.hpp"
 #include "SFML/System.hpp"
+#include "SFML/Audio.hpp"
 #include <ctime>
 #include <iostream>
 using namespace std;
@@ -43,6 +44,9 @@ private:
 	sf::Text TimerText;
 	sf::Texture backgroundTexture;
 	sf::Sprite backgroundSprite;
+	//Audio
+	sf::SoundBuffer jumpBuffer;
+	sf::Sound jumpSound;
 	//Image
 	
 	//Initialization
@@ -60,6 +64,8 @@ private:
 	void initFont();
 	void initText();
 	void initTimerText();
+	void initAudio();
+	void initSound();
 
 	//Variable
 	sf::Vector2f velocity;
