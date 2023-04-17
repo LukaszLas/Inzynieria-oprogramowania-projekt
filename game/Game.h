@@ -68,6 +68,7 @@ private:
 	void createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft);
 	void createSpikeTrap(float sizeX, float positionX, float positionY);
 	void createAbyss(float sizeX, float sizeY, float positionX, float positionY);
+	void createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY);
 	void initFont();
 	void initText();
 	void initTimerText();
@@ -98,6 +99,7 @@ private:
 	bool moveUp = true;
 	float startingpos;
 	int currentLevel = 0;
+	bool levelUpdate = true;
 
 public:
 	Game();

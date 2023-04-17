@@ -34,48 +34,76 @@ void Game::initEnemies()
 	this->enemyMoveRangeRight = 200;
 	this->enemyMoveRangeLeft = 200;
 	this->enemyStartPositionX = this->movingEnemy.getPosition().x;
-	movingEnemys.push_back(this->movingEnemy);
+	//movingEnemys.push_back(this->movingEnemy);
 	//createMovingEnemies(200, 200, 100, 100);
 }
 void Game::createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft)
 {
 	this->movingEnemy.setPosition(positionX, positionY);
-	this->initTexture();
-	this->initSprite();
+	//this->initTexture();
+	//this->initSprite();
 	this->movingEnemy.setSize(sf::Vector2f(60.f, 60.f));
 	this->movingEnemy.setTexture(&movingEnemyTexture);
 	this->enemyMoveRangeRight = moveRangeRight;
 	this->enemyMoveRangeLeft = moveRangeLeft;
-	this->enemyStartPositionX = this->movingEnemy.getPosition().x;
+	enemyStartPositionX = movingEnemy.getPosition().x;
 	movingEnemys.push_back(this->movingEnemy);
 }
 void Game::initObjects()
 {
 
-	createPlatform(100, 20, 250, 850);
-	createPlatform(100, 20, 370, 700);
-	createPlatform(100, 20, 50, 950);
-	createPlatform(1920, 7, 0, 1073);
-	createPlatform(150, 20, 520, 550);
-	//createSpikeTrap(30, 400, 700);
+	switch (this->currentLevel)
+	{
+	case 0:
+		platforms.clear();
+		abysses.clear();
+		spikeTraps.clear();
+		movingEnemys.clear();
+		createPlatform(100, 20, 250, 850);
+		createPlatform(100, 20, 370, 700);
+		createPlatform(100, 20, 50, 950);
+		createPlatform(1920, 7, 0, 1073);
+		createPlatform(150, 20, 520, 550);
+		createSpikeTrap(30, 400, 700);
+		createMovingEnemies(1350, 1020, 160, 160);
+		createAbyss(100, 9, 650, 1070);
+		createAbyss(100, 9, 830, 1070);
+		createAbyss(380, 19, 650, 800);
+		createAbyss(420, 9, 150, 1070);
+		createEndOfLevel(50, 100, 1870, 980);
+		break;
+	case 1:
+		platforms.clear();
+		abysses.clear();
+		spikeTraps.clear();
+		movingEnemys.clear();
+		createPlatform(50, 20, 620, 500);
+		createPlatform(50, 20, 720, 600);
+		createPlatform(50, 20, 850, 700);
+		createPlatform(50, 20, 980, 800);
+		createPlatform(50, 20, 1200, 900);
+		createPlatform(50, 20, 1450, 1000);
+		createPlatform(50, 20, 1660, 1100);
+		createPlatform(50, 20, 1760, 1200);
+		createPlatform(1920, 7, 0, 1073);
+		createSpikeTrap(50, 720, 600);
+		createAbyss(1680, 9, 0, 1070);
+		createEndOfLevel(50, 100, 400, 200);
+		break;
+	default:
+		break;
+	}
 
-	//this->abyss.setFillColor(sf::Color::Red);
-	//this->abyss.setSize(sf::Vector2f(200.f, 9.f));
-	//this->abyss.setPosition(150.f, 1070.f);
-	//this->abyss.setTexture(&abyssTexture);
-	//this->abysses.push_back(this->abyss);
-	createAbyss(200, 9, 150, 1070);
 	
 	//this->spikeTrap.setFillColor(sf::Color::Magenta);
-	this->spikeTrap.setSize(sf::Vector2f(30.f, 19.f));
-	this->spikeTrap.setPosition(400.f, 700.f);
-	this->spikeTrap.setTexture(&spikesTexture);
-	this->spikeTraps.push_back(this->spikeTrap);
-	startingpos = spikeTrap.getPosition().y;
+	//this->spikeTrap.setSize(sf::Vector2f(30.f, 19.f));
+	//this->spikeTrap.setPosition(400.f, 700.f);
+	//this->spikeTrap.setTexture(&spikesTexture);
+	//this->spikeTraps.push_back(this->spikeTrap);
+	//startingpos = spikeTrap.getPosition().y;
 
-	this->endOfLevel.setSize(sf::Vector2f(50.f, 100.f));
-	this->endOfLevel.setTexture(&endOfLevelTexture);
-	this->endOfLevel.setPosition(1870.f, 980.f);
+	//createEndOfLevel(50, 100, 1870, 980);
+	
 }     
 
 void Game::createPlatform(float sizeX, float sizeY, float positionX, float positionY)
@@ -99,6 +127,12 @@ void Game::createSpikeTrap(float sizeX, float positionX, float positionY)
 	this->spikeTrap.setTexture(&spikesTexture);
 	this->spikeTraps.push_back(this->spikeTrap);
 	startingpos = spikeTrap.getPosition().y;
+}
+void Game::createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->endOfLevel.setSize(sf::Vector2f(sizeX, sizeY));
+	this->endOfLevel.setTexture(&endOfLevelTexture);
+	this->endOfLevel.setPosition(positionX, positionY);
 }
 void Game::initTexture()
 {
@@ -195,8 +229,8 @@ Game::Game()
 	this->initVariable();
 	this->initWindow();
 	this->initCharacter();
-	this->initEnemies();
 	this->initObjects();
+	//this->initEnemies();
 	this->initFont();
 	this->initText();
 	this->initTimerText();
@@ -224,6 +258,11 @@ void Game::update()
 	clock_t timeStop = clock();
 	duration = static_cast<float>(timeStop - timeStart) / CLOCKS_PER_SEC;
 	TimerText.setString(to_string(duration));
+	if (levelUpdate)
+	{
+		this->initObjects();
+		levelUpdate = false;
+	}
 }
 
 void Game::pollEvents()
@@ -247,9 +286,10 @@ void Game::render()
 {
 	this->window->clear();
 	//draw game objects
+	
 	this->window->draw(backgroundSprite);
 	this->window->draw(this->character);
-	this->window->draw(this->movingEnemy);
+	//this->window->draw(this->movingEnemy);
 	this->window->draw(this->endOfLevel);
 	for (auto& i : this->spikeTraps)
 	{
@@ -371,6 +411,7 @@ void Game::moveCharacter()
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 			this->timeStart = clock();
 			this->currentLevel = 0;
+			this -> levelUpdate = true;
 			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
 			character.setPosition(65.f, 825.f);
 		}
@@ -386,6 +427,7 @@ void Game::moveCharacter()
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 			this->timeStart = clock();
 			this->currentLevel = 0;
+			this->levelUpdate = true;
 			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
 			character.setPosition(65.f, 825.f);
 		}
@@ -401,6 +443,7 @@ void Game::moveCharacter()
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 			this->timeStart = clock();
 			this->currentLevel = 0;
+			this->levelUpdate = true;
 			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
 			character.setPosition(65.f, 825.f);
 		}
@@ -412,6 +455,8 @@ void Game::moveCharacter()
 	{
 		this->currentLevel++;
 		this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
+		this->levelUpdate = true;
+
 	}
 
 	character.move(velocity);
