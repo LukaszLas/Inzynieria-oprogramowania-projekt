@@ -187,7 +187,8 @@ Game::Game()
 	this->initFont();
 	this->initText();
 	this->initTimerText();
-	
+	this->initAudio();
+	this->initSound();
 }
 
 Game::~Game()
