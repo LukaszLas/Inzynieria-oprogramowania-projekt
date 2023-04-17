@@ -72,6 +72,10 @@ void Game::initObjects()
 	this->spikeTrap.setTexture(&spikesTexture);
 	this->spikeTraps.push_back(this->spikeTrap);
 	startingpos = spikeTrap.getPosition().y;
+
+	this->endOfLevel.setSize(sf::Vector2f(50.f, 100.f));
+	this->endOfLevel.setTexture(&endOfLevelTexture);
+	this->endOfLevel.setPosition(1870.f, 980.f);
 }     
 
 void Game::createPlatform(float sizeX, float sizeY, float positionX, float positionY)
@@ -122,6 +126,10 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->endOfLevelTexture.loadFromFile("Images/door.png"))
+	{
+		cout << "Error initTexture";
+	}
 }
 
 
@@ -132,6 +140,7 @@ void Game::initSprite()
 	this->platformSprite.setTexture(this->platformTexture);
 	this->abyssSprite.setTexture(this->abyssTexture);
 	this->spikesSprite.setTexture(this->spikesTexture);
+	this->endOfLevelSprite.setTexture(this->endOfLevelTexture);
 	this->backgroundSprite.setTexture(this->backgroundTexture);
 }
 
@@ -150,6 +159,12 @@ void Game::initText()
 	this->deathCounterText.setStyle(sf::Text::Bold);
 	this->deathCounterText.setPosition(20.f, 80.f);
 	this->deathCounterText.setString("Deaths: 0");
+
+	this->currentLevelText.setFont(font);
+	this->currentLevelText.setCharacterSize(30);
+	this->currentLevelText.setStyle(sf::Text::Bold);
+	this->currentLevelText.setPosition(1750.f, 40.f);
+	this->currentLevelText.setString("Level: 1");
 }
 
 void Game::initTimerText()
@@ -158,8 +173,6 @@ void Game::initTimerText()
 	this->TimerText.setCharacterSize(30);
 	this->TimerText.setStyle(sf::Text::Bold);
 	this->TimerText.setPosition(20.f, 40.f);
-	
-
 }
 void Game::initAudio()
 {
@@ -237,6 +250,7 @@ void Game::render()
 	this->window->draw(backgroundSprite);
 	this->window->draw(this->character);
 	this->window->draw(this->movingEnemy);
+	this->window->draw(this->endOfLevel);
 	for (auto& i : this->spikeTraps)
 	{
 		this->window->draw(i);
@@ -256,6 +270,7 @@ void Game::render()
 	//draw UI
 	this->window->draw(this->deathCounterText);
 	this->window->draw(this->TimerText);
+	this->window->draw(this->currentLevelText);
 
 	this->window->display();
 }
@@ -281,8 +296,8 @@ void Game::moveCharacter()
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) && (this->canJump == true))
 	{
 		this->canJump = false;
-		this->velocity.y = -sqrt(2.0f * gravity * jumpHeight);
 		this->jumpSound.play();
+		this->velocity.y = -sqrt(2.0f * gravity * jumpHeight);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{
@@ -355,6 +370,8 @@ void Game::moveCharacter()
 			this->deathCounter++;
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 			this->timeStart = clock();
+			this->currentLevel = 0;
+			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
 			character.setPosition(65.f, 825.f);
 		}
 
@@ -368,6 +385,8 @@ void Game::moveCharacter()
 			this->deathCounter++;
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 			this->timeStart = clock();
+			this->currentLevel = 0;
+			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
 			character.setPosition(65.f, 825.f);
 		}
 	}
@@ -381,8 +400,18 @@ void Game::moveCharacter()
 			this->deathCounter++;
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
 			this->timeStart = clock();
+			this->currentLevel = 0;
+			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
 			character.setPosition(65.f, 825.f);
 		}
+	}
+	
+	//end of level doors collision
+	sf::FloatRect doorBounds = endOfLevel.getGlobalBounds();
+	if (doorBounds.intersects(character.getGlobalBounds()))
+	{
+		this->currentLevel++;
+		this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
 	}
 
 	character.move(velocity);

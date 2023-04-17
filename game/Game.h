@@ -38,10 +38,17 @@ private:
 	sf::RectangleShape spikeTrap;
 	sf::Sprite enemySprite;
 	sf::Texture movingEnemyTexture;
+	
+	sf::RectangleShape endOfLevel;
+	sf::Sprite endOfLevelSprite;
+	sf::Texture endOfLevelTexture;
+	
+
 	//UI
 	sf::Font font;
 	sf::Text deathCounterText;
 	sf::Text TimerText;
+	sf::Text currentLevelText;
 	sf::Texture backgroundTexture;
 	sf::Sprite backgroundSprite;
 	//Audio
@@ -90,6 +97,7 @@ private:
 	float spikeTrapMoveRange = 20;
 	bool moveUp = true;
 	float startingpos;
+	int currentLevel = 0;
 
 public:
 	Game();
