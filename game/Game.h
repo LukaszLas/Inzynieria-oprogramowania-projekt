@@ -7,6 +7,22 @@
 #include <iostream>
 using namespace std;
 
+class classSpikeTrap
+{
+private:
+	float startPositionY;
+	float moveRange=20;
+public:
+	sf::RectangleShape spikeTrap;
+	void setSizeSpikeTrap(float x, float y) { this->spikeTrap.setSize(sf::Vector2f(x, y)); }
+	void setPositionSpikeTrap(float x, float y) { this->spikeTrap.setPosition(x, y); }
+	void setTextureSpikeTrap(sf::Texture& texture) { this->spikeTrap.setTexture(&texture); }
+	void setStartPosYSpikeTrap(float x) { this->startPositionY = x; }
+	void setMoveRangeSpikeTrap(float x) { this->moveRange = x; }
+	float getStartPositionY() { return this->startPositionY; }
+	float getMoveRange() { return this->moveRange; }
+};
+
 class Game
 {
 private:
@@ -34,8 +50,8 @@ private:
 	sf::RectangleShape movingEnemy ;
 	sf::Sprite spikesSprite;
 	sf::Texture spikesTexture;
-	vector<sf::RectangleShape> spikeTraps;
-	sf::RectangleShape spikeTrap;
+	vector< classSpikeTrap> spikeTraps;
+	//sf::RectangleShape spikeTrap;
 	sf::Sprite enemySprite;
 	sf::Texture movingEnemyTexture;
 	
@@ -95,7 +111,7 @@ private:
 	clock_t timeStart =clock();
 	int deathCounter = 0;
 	int spikeTrapTimer = 0;
-	float spikeTrapMoveRange = 20;
+	//float spikeTrapMoveRange = 20;
 	bool moveUp = true;
 	float startingpos;
 	int currentLevel = 0;
@@ -115,3 +131,4 @@ public:
 	float getDT() { return dt; }
 	sf::IntRect uvRect;
 };
+

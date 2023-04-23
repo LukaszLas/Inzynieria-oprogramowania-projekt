@@ -65,6 +65,7 @@ void Game::initObjects()
 		createPlatform(1920, 7, 0, 1073);
 		createPlatform(150, 20, 520, 550);
 		createSpikeTrap(30, 400, 700);
+		createSpikeTrap(30, 450, 700);
 		createMovingEnemies(1350, 1020, 160, 160);
 		createAbyss(100, 9, 650, 1070);
 		createAbyss(100, 9, 830, 1070);
@@ -122,11 +123,12 @@ void Game::createAbyss(float sizeX, float sizeY, float positionX, float position
 }
 void Game::createSpikeTrap(float sizeX, float positionX, float positionY)
 {
-	this->spikeTrap.setSize(sf::Vector2f(sizeX, 19.f));
-	this->spikeTrap.setPosition(positionX, positionY);
-	this->spikeTrap.setTexture(&spikesTexture);
-	this->spikeTraps.push_back(this->spikeTrap);
-	startingpos = spikeTrap.getPosition().y;
+	classSpikeTrap st;
+	st.setPositionSpikeTrap(positionX, positionY);
+	st.setSizeSpikeTrap(sizeX, 19);
+	st.setTextureSpikeTrap(spikesTexture);
+	st.setStartPosYSpikeTrap(st.spikeTrap.getPosition().y);
+	spikeTraps.push_back(st);
 }
 void Game::createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY)
 {
@@ -293,7 +295,7 @@ void Game::render()
 	this->window->draw(this->endOfLevel);
 	for (auto& i : this->spikeTraps)
 	{
-		this->window->draw(i);
+		this->window->draw(i.spikeTrap);
 	}
 	for (auto& i : this->platforms)
 	{
@@ -435,7 +437,7 @@ void Game::moveCharacter()
 	//spike trap collision
 	for (auto& spikeTrap : spikeTraps)
 	{
-		sf::FloatRect spikeTrapBounds = spikeTrap.getGlobalBounds();
+		sf::FloatRect spikeTrapBounds = spikeTrap.spikeTrap.getGlobalBounds();
 
 		if (spikeTrapBounds.intersects(character.getGlobalBounds()))
 		{
@@ -528,20 +530,20 @@ void Game::moveSpikeTrap()
 	{
 		for (auto& spikeTrap : spikeTraps)
 		{
-			if (spikeTrap.getPosition().y > startingpos - spikeTrapMoveRange && this->moveUp)
+			if (spikeTrap.spikeTrap.getPosition().y > spikeTrap.getStartPositionY() - spikeTrap.getMoveRange() && this->moveUp)
 			{
-				spikeTrap.move(0.f, -5.f);
+				spikeTrap.spikeTrap.move(0.f, -5.f);
 			}
 			else 
 			{
-				if (spikeTrap.getPosition().y == startingpos)
+				if (spikeTrap.spikeTrap.getPosition().y == spikeTrap.getStartPositionY())
 				{
 					spikeTrapTimer = 0;
 					moveUp = true;
 					break;
 				}
 				moveUp = false;
-				spikeTrap.move(0.f, 0.5f);
+				spikeTrap.spikeTrap.move(0.f, 0.5f);
 			}
 		}
 	}
