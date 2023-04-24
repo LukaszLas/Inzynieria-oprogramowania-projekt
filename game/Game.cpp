@@ -62,11 +62,15 @@ void Game::initObjects()
 		abysses.clear();
 		spikeTraps.clear();
 		movingEnemys.clear();
+		coins.clear();
 		createPlatform(100, 20, 250, 850);
 		createPlatform(100, 20, 370, 700);
 		createPlatform(100, 20, 50, 950);
 		createPlatform(1920, 7, 0, 1073);
 		createPlatform(150, 20, 520, 550);
+		createPlatform(100, 20, 750, 425);
+		createPlatform(100, 20, 1000, 425);
+		createPlatform(40, 20, 1350, 425);
 		createSpikeTrap(30, 400, 700);
 		createSpikeTrap(30, 450, 700);
 		createMovingEnemies(1350, 1020, 160, 160);
@@ -74,6 +78,12 @@ void Game::initObjects()
 		createAbyss(100, 9, 830, 1070);
 		createAbyss(380, 19, 650, 800);
 		createAbyss(420, 9, 150, 1070);
+		createAbyss(310, 19, 1070, 500);
+		createCoin(20, 1350, 330);
+		createCoin(20, 1350, 380);
+		createCoin(20, 570, 500);
+		createCoin(20, 280, 800);
+		createCoin(20, 1775, 1025);
 		createEndOfLevel(50, 100, 1870, 980);
 		break;
 	case 1:
@@ -81,6 +91,7 @@ void Game::initObjects()
 		abysses.clear();
 		spikeTraps.clear();
 		movingEnemys.clear();
+		coins.clear();
 		createPlatform(50, 20, 620, 500);
 		createPlatform(50, 20, 720, 600);
 		createPlatform(50, 20, 850, 700);
@@ -143,6 +154,15 @@ void Game::createEndOfLevel(float sizeX, float sizeY, float positionX, float pos
 	this->endOfLevel.setPosition(positionX, positionY);
 }
 
+void Game::createCoin(float radius, float positionX, float positionY)
+{
+	classCoin coin;
+	coin.setCoinRadius(radius);
+	coin.setCoinPosition(positionX, positionY);
+	coin.setCoinTexture(coinTexture);
+	coins.push_back(coin);
+}
+
 void Game::initTexture()
 {
 	if (!this->texture.loadFromFile("Images/image.png"))
@@ -173,6 +193,10 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->coinTexture.loadFromFile("Images/coin.png"))
+	{
+		cout << "Error initTexture";
+	}
 }
 
 void Game::initSprite()
@@ -184,6 +208,7 @@ void Game::initSprite()
 	this->spikesSprite.setTexture(this->spikesTexture);
 	this->endOfLevelSprite.setTexture(this->endOfLevelTexture);
 	this->backgroundSprite.setTexture(this->backgroundTexture);
+	this->coinSprite.setTexture(this->coinTexture);
 }
 
 void Game::initFont()
@@ -207,6 +232,12 @@ void Game::initText()
 	this->currentLevelText.setStyle(sf::Text::Bold);
 	this->currentLevelText.setPosition(1750.f, 40.f);
 	this->currentLevelText.setString("Level: 1");
+
+	this->totalCoinsText.setFont(font);
+	this->totalCoinsText.setCharacterSize(30);
+	this->totalCoinsText.setStyle(sf::Text::Bold);
+	this->totalCoinsText.setPosition(1750.f, 80.f);
+	this->totalCoinsText.setString("Coins: 0");
 }
 
 void Game::initTimerText()
@@ -223,7 +254,11 @@ void Game::initAudio()
 	{
 		cout << "Error initAudio";
 	}
-	if (!this->spikeTrapBuffer.loadFromFile("Audio/spikeTrap.wav"));
+	if (!this->spikeTrapBuffer.loadFromFile("Audio/spiketrap.wav"));
+	{
+		cout << "Error initAudio";
+	}
+	if (!this->coinPickUpBuffer.loadFromFile("Audio/coin.wav"));
 	{
 		cout << "Error initAudio";
 	}
@@ -233,6 +268,7 @@ void Game::initSound()
 {
 	this->jumpSound.setBuffer(this->jumpBuffer);
 	this->spikeTrapSound.setBuffer(this->spikeTrapBuffer);
+	this->coinPickUpSound.setBuffer(this->coinPickUpBuffer);
 }
 
 
@@ -317,6 +353,13 @@ void Game::render()
 	{
 		this->window->draw(i);
 	}
+	for (size_t i = 0; i < this->coins.size(); i++)
+	{
+		if(this->coins[i].getIsCollected() == false)
+		{
+			this->window->draw(coins[i].coin);
+		}
+	}
 	for (auto& i : this->movingEnemys)
 	{
 		this->window->draw(i);
@@ -325,6 +368,7 @@ void Game::render()
 	this->window->draw(this->deathCounterText);
 	this->window->draw(this->TimerText);
 	this->window->draw(this->currentLevelText);
+	this->window->draw(this->totalCoinsText);
 
 	this->window->display();
 }
@@ -415,11 +459,12 @@ void Game::moveCharacter()
 			}
 		}
 	}
+	//abyss collision
 	for (auto& abyss : abysses)
 	{
 		sf::FloatRect abyssBounds = abyss.getGlobalBounds();
 
-		if (abyssBounds.intersects(nextPos))
+		if (abyssBounds.intersects(character.getGlobalBounds()))
 		{
 			this->deathCounter++;
 			this->deathCounterText.setString("Deaths: " + to_string(this->deathCounter));
@@ -471,6 +516,19 @@ void Game::moveCharacter()
 		this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
 		this->levelUpdate = true;
 
+	}
+
+	//coin collision
+	for (size_t i = 0; i < coins.size(); i++)
+	{
+		if (coins[i].getCoinGlobalBounds().intersects(character.getGlobalBounds()))
+		{
+			this->coinPickUpSound.play();
+			coins[i].setIsCollected();
+			this->totalCoins++;
+			this->totalCoinsText.setString("Coins: " + to_string(this->totalCoins));
+			coins.erase(coins.begin() + i);
+		}
 	}
 
 	character.move(velocity);

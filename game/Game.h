@@ -24,6 +24,20 @@ public:
 	float getMoveRange() { return this->moveRange; }
 };
 
+class classCoin
+{
+private:
+	bool isCollected = false;
+public:
+	sf::CircleShape coin;
+	void setCoinRadius(float radius) { this->coin.setRadius(radius); }
+	void setCoinPosition(float x, float y) { this->coin.setPosition(x, y); }
+	void setCoinTexture(sf::Texture& texture) { this->coin.setTexture(&texture); }
+	void setIsCollected() { this->isCollected = true; }
+	sf::FloatRect getCoinGlobalBounds() { return this->coin.getGlobalBounds(); }
+	bool getIsCollected() { return this->isCollected; }
+};
+
 class Game
 {
 private:
@@ -55,7 +69,11 @@ private:
 	//sf::RectangleShape spikeTrap;
 	sf::Sprite enemySprite;
 	sf::Texture movingEnemyTexture;
-	
+
+	vector<classCoin> coins;
+	sf::Sprite coinSprite;
+	sf::Texture coinTexture;
+
 	sf::RectangleShape endOfLevel;
 	sf::Sprite endOfLevelSprite;
 	sf::Texture endOfLevelTexture;
@@ -66,6 +84,7 @@ private:
 	sf::Text deathCounterText;
 	sf::Text TimerText;
 	sf::Text currentLevelText;
+	sf::Text totalCoinsText;
 	sf::Texture backgroundTexture;
 	sf::Sprite backgroundSprite;
 	//Audio
@@ -73,6 +92,8 @@ private:
 	sf::Sound jumpSound;
 	sf::SoundBuffer spikeTrapBuffer;
 	sf::Sound spikeTrapSound;
+	sf::SoundBuffer coinPickUpBuffer;
+	sf::Sound coinPickUpSound;
 	//Image
 	
 	//Initialization
@@ -88,6 +109,7 @@ private:
 	void createSpikeTrap(float sizeX, float positionX, float positionY);
 	void createAbyss(float sizeX, float sizeY, float positionX, float positionY);
 	void createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY);
+	void createCoin(float radius, float positionX, float positionY);
 	void initFont();
 	void initText();
 	void initTimerText();
@@ -119,6 +141,7 @@ private:
 	float startingpos;
 	int currentLevel = 0;
 	bool levelUpdate = true;
+	int totalCoins = 0;
 
 public:
 	Game();
