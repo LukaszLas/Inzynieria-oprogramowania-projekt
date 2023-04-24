@@ -24,6 +24,7 @@ void Game::initCharacter()
 	this->character.setSize(sf::Vector2f(50.f, 50.f));
 	this->character.setTexture(&texture);
 }
+
 void Game::initEnemies()
 {
 	this->movingEnemy.setPosition(650,1250);
@@ -37,6 +38,7 @@ void Game::initEnemies()
 	//movingEnemys.push_back(this->movingEnemy);
 	//createMovingEnemies(200, 200, 100, 100);
 }
+
 void Game::createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft)
 {
 	this->movingEnemy.setPosition(positionX, positionY);
@@ -49,6 +51,7 @@ void Game::createMovingEnemies(float positionX, float positionY, float moveRange
 	enemyStartPositionX = movingEnemy.getPosition().x;
 	movingEnemys.push_back(this->movingEnemy);
 }
+
 void Game::initObjects()
 {
 
@@ -114,6 +117,7 @@ void Game::createPlatform(float sizeX, float sizeY, float positionX, float posit
 	this->platform.setTexture(&platformTexture);
 	this->platforms.push_back(this->platform);
 }
+
 void Game::createAbyss(float sizeX, float sizeY, float positionX, float positionY)
 {
 	this->abyss.setSize(sf::Vector2f(sizeX, sizeY));
@@ -121,6 +125,7 @@ void Game::createAbyss(float sizeX, float sizeY, float positionX, float position
 	this->abyss.setTexture(&abyssTexture);
 	this->abysses.push_back(this->abyss);
 }
+
 void Game::createSpikeTrap(float sizeX, float positionX, float positionY)
 {
 	classSpikeTrap st;
@@ -130,12 +135,14 @@ void Game::createSpikeTrap(float sizeX, float positionX, float positionY)
 	st.setStartPosYSpikeTrap(st.spikeTrap.getPosition().y);
 	spikeTraps.push_back(st);
 }
+
 void Game::createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY)
 {
 	this->endOfLevel.setSize(sf::Vector2f(sizeX, sizeY));
 	this->endOfLevel.setTexture(&endOfLevelTexture);
 	this->endOfLevel.setPosition(positionX, positionY);
 }
+
 void Game::initTexture()
 {
 	if (!this->texture.loadFromFile("Images/image.png"))
@@ -167,7 +174,6 @@ void Game::initTexture()
 		cout << "Error initTexture";
 	}
 }
-
 
 void Game::initSprite()
 {
@@ -210,9 +216,14 @@ void Game::initTimerText()
 	this->TimerText.setStyle(sf::Text::Bold);
 	this->TimerText.setPosition(20.f, 40.f);
 }
+
 void Game::initAudio()
 {
 	if (!this->jumpBuffer.loadFromFile("Audio/jump.wav"))
+	{
+		cout << "Error initAudio";
+	}
+	if (!this->spikeTrapBuffer.loadFromFile("Audio/spikeTrap.wav"));
 	{
 		cout << "Error initAudio";
 	}
@@ -221,6 +232,7 @@ void Game::initAudio()
 void Game::initSound()
 {
 	this->jumpSound.setBuffer(this->jumpBuffer);
+	this->spikeTrapSound.setBuffer(this->spikeTrapBuffer);
 }
 
 
@@ -532,6 +544,7 @@ void Game::moveSpikeTrap()
 		{
 			if (spikeTrap.spikeTrap.getPosition().y > spikeTrap.getStartPositionY() - spikeTrap.getMoveRange() && this->moveUp)
 			{
+				this->spikeTrapSound.play();
 				spikeTrap.spikeTrap.move(0.f, -5.f);
 			}
 			else 

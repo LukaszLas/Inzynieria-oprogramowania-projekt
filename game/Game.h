@@ -70,6 +70,8 @@ private:
 	//Audio
 	sf::SoundBuffer jumpBuffer;
 	sf::Sound jumpSound;
+	sf::SoundBuffer spikeTrapBuffer;
+	sf::Sound spikeTrapSound;
 	//Image
 	
 	//Initialization
