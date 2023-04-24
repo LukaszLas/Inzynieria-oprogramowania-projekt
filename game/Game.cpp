@@ -58,6 +58,7 @@ void Game::initObjects()
 	switch (this->currentLevel)
 	{
 	case 0:
+		this->music.play();
 		platforms.clear();
 		abysses.clear();
 		spikeTraps.clear();
@@ -262,6 +263,10 @@ void Game::initAudio()
 	{
 		cout << "Error initAudio";
 	}
+	if (!this->music.openFromFile("Audio/music.ogg"))
+	{
+		cout << "Error initAudio";
+	}
 }
 
 void Game::initSound()
@@ -269,6 +274,8 @@ void Game::initSound()
 	this->jumpSound.setBuffer(this->jumpBuffer);
 	this->spikeTrapSound.setBuffer(this->spikeTrapBuffer);
 	this->coinPickUpSound.setBuffer(this->coinPickUpBuffer);
+	this->coinPickUpSound.setVolume(15.f);
+	this->music.setLoop(true);
 }
 
 

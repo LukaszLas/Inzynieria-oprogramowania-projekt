@@ -88,6 +88,7 @@ private:
 	sf::Texture backgroundTexture;
 	sf::Sprite backgroundSprite;
 	//Audio
+	sf::Music music;
 	sf::SoundBuffer jumpBuffer;
 	sf::Sound jumpSound;
 	sf::SoundBuffer spikeTrapBuffer;
