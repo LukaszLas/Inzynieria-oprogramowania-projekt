@@ -263,7 +263,7 @@ void Game::initAudio()
 	{
 		cout << "Error initAudio";
 	}
-	if (!this->music.openFromFile("Audio/music.ogg"))
+	if (!this->music.openFromFile("Audio/horses.ogg"))
 	{
 		cout << "Error initAudio";
 	}
@@ -274,8 +274,8 @@ void Game::initSound()
 	this->jumpSound.setBuffer(this->jumpBuffer);
 	this->spikeTrapSound.setBuffer(this->spikeTrapBuffer);
 	this->coinPickUpSound.setBuffer(this->coinPickUpBuffer);
-	this->coinPickUpSound.setVolume(15.f);
 	this->music.setLoop(true);
+	this->music.setVolume(30.f);
 }
 
 
