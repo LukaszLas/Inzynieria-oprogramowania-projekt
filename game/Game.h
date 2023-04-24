@@ -143,6 +143,7 @@ private:
 	bool levelUpdate = true;
 	int totalCoins = 0;
 
+
 public:
 	Game();
 	virtual ~Game();

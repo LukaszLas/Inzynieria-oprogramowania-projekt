@@ -156,11 +156,11 @@ void Game::createEndOfLevel(float sizeX, float sizeY, float positionX, float pos
 
 void Game::createCoin(float radius, float positionX, float positionY)
 {
-	classCoin coin;
-	coin.setCoinRadius(radius);
-	coin.setCoinPosition(positionX, positionY);
-	coin.setCoinTexture(coinTexture);
-	coins.push_back(coin);
+		classCoin coin;
+		coin.setCoinRadius(radius);
+		coin.setCoinPosition(positionX, positionY);
+		coin.setCoinTexture(coinTexture);
+		coins.push_back(coin);
 }
 
 void Game::initTexture()
@@ -471,7 +471,7 @@ void Game::moveCharacter()
 			this->timeStart = clock();
 			this->currentLevel = 0;
 			this -> levelUpdate = true;
-			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
+			this->currentLevelText.setString("Level: " + to_string(this->currentLevel+1));
 			character.setPosition(65.f, 825.f);
 		}
 
@@ -487,7 +487,7 @@ void Game::moveCharacter()
 			this->timeStart = clock();
 			this->currentLevel = 0;
 			this->levelUpdate = true;
-			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
+			this->currentLevelText.setString("Level: " + to_string(this->currentLevel+1));
 			character.setPosition(65.f, 825.f);
 		}
 	}
@@ -503,7 +503,7 @@ void Game::moveCharacter()
 			this->timeStart = clock();
 			this->currentLevel = 0;
 			this->levelUpdate = true;
-			this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
+			this->currentLevelText.setString("Level: " + to_string(this->currentLevel+1));
 			character.setPosition(65.f, 825.f);
 		}
 	}
@@ -513,7 +513,7 @@ void Game::moveCharacter()
 	if (doorBounds.intersects(character.getGlobalBounds()))
 	{
 		this->currentLevel++;
-		this->currentLevelText.setString("Level: " + to_string(this->currentLevel));
+		this->currentLevelText.setString("Level: " + to_string(this->currentLevel+1));
 		this->levelUpdate = true;
 
 	}
