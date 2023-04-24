@@ -6,6 +6,7 @@ void Game::initVariable()
 	sf::Vector2f velocity(sf::Vector2f(0, 0));
 	const float window_width = 1920;
 	const float window_height = 1080;
+
 }
 
 void Game::initWindow()
@@ -58,7 +59,6 @@ void Game::initObjects()
 	switch (this->currentLevel)
 	{
 	case 0:
-		this->music.play();
 		platforms.clear();
 		abysses.clear();
 		spikeTraps.clear();
@@ -276,6 +276,8 @@ void Game::initSound()
 	this->coinPickUpSound.setBuffer(this->coinPickUpBuffer);
 	this->music.setLoop(true);
 	this->music.setVolume(30.f);
+	this->music.play();
+
 }
 
 
