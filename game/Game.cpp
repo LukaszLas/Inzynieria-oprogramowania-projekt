@@ -280,6 +280,50 @@ void Game::initSound()
 
 }
 
+const string Game::getAsString() const
+{
+	stringstream ss;
+	ss << this->character.getPosition().x << " " << this->character.getPosition().y << " " 
+	   << this->currentLevel << " " << this->totalCoins << " " << this->deathCounter;
+	return ss.str();
+}
+
+void Game::saveGame()
+{
+	this->gameSave.open("Saves/gamesave.txt");
+	if (this->gameSave.is_open())
+	{
+		this->gameSave << getAsString();
+	}
+	else
+	{
+		cout << "Error: could not save!";
+	}
+}
+
+void Game::loadGame()
+{
+	this->gameLoad.open("Saves/gamesave.txt");
+	if (this->gameLoad.is_open())
+	{
+		sf::Vector2f position;
+		int level=0, coins=0, deaths=0;
+
+		this->gameLoad >> position.x >> position.y >> level >> coins >> deaths;
+
+		this->character.setPosition(position);
+		this->currentLevel = level;
+		this->totalCoins = coins;
+		this->deathCounter = deaths;
+
+		this->initObjects();
+		this->initText();
+	}
+	else
+	{
+		cout << "Error: could not load!";
+	}
+}
 
 
 //Constructors /Destructor
@@ -335,8 +379,19 @@ void Game::pollEvents()
 			break;
 		case sf::Event::KeyPressed:
 			if (this->ev.key.code == sf::Keyboard::Escape)
+			{
 				this->window->close();
+			}
+			if (this->ev.key.code == sf::Keyboard::F5)
+			{
+				this->saveGame();
+			}
+			if (this->ev.key.code == sf::Keyboard::F9)
+			{
+				this->loadGame();
+			}
 			break;
+
 		}
 	}
 }

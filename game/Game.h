@@ -5,6 +5,8 @@
 #include "SFML/Audio.hpp"
 #include <ctime>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 
@@ -117,6 +119,10 @@ private:
 	void initAudio();
 	void initSound();
 
+	const string getAsString() const;
+	void saveGame();
+	void loadGame();
+
 	//Variable
 	sf::Vector2f velocity;
 	bool canJump = true;
@@ -143,6 +149,8 @@ private:
 	int currentLevel = 0;
 	bool levelUpdate = true;
 	int totalCoins = 0;
+	ofstream gameSave;
+	ifstream gameLoad;
 
 
 public:
