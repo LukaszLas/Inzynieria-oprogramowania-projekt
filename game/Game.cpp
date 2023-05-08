@@ -262,7 +262,7 @@ void Game::initText()
 	this->totalCoinsText.setCharacterSize(30);
 	this->totalCoinsText.setStyle(sf::Text::Bold);
 	this->totalCoinsText.setPosition(1750.f, 80.f);
-	this->totalCoinsText.setString("Coins: 0");
+	this->totalCoinsText.setString("Coins: " + to_string(this->totalCoins));
 }
 
 void Game::initTimerText()
@@ -314,7 +314,7 @@ const string Game::getAsString() const
 
 void Game::saveGame()
 {
-	if (this->deathCounter==0;)
+	if (this->deathCounter==0)
 	{
 		this->gameSave.open("Saves/gamesave.txt");
 		if (this->gameSave.is_open())
@@ -341,9 +341,11 @@ void Game::loadGame()
 		this->character.setPosition(position);
 		this->currentLevel = level;
 		this->totalCoins = coins;
+		this->deathCounter = 0;
 
 		this->initObjects();
 		this->initText();
+		this->render();
 	}
 	else
 	{
@@ -355,8 +357,6 @@ void Game::loadGame()
 //Constructors /Destructor
 Game::Game()
 {
-
-	
 	this->initVariable();
 	this->initWindow();
 	this->initCharacter();
@@ -367,7 +367,6 @@ Game::Game()
 	this->initTimerText();
 	this->initAudio();
 	this->initSound();
-	
 }
 
 Game::~Game()
@@ -423,6 +422,7 @@ void Game::pollEvents()
 			if (this->ev.key.code == sf::Keyboard::F5)
 			{
 				this->saveGame();
+				this->window->close();
 			}
 			if (this->ev.key.code == sf::Keyboard::F9)
 			{

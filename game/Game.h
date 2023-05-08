@@ -152,7 +152,7 @@ private:
 	//float spikeTrapMoveRange = 20;
 	bool moveUp = true;
 	float startingpos;
-	int currentLevel = 2;
+	int currentLevel = 0;
 	bool levelUpdate = true;
 	int totalCoins = 0;
 	bool gameEnded = false;
