@@ -748,11 +748,11 @@ void menuHighScore::loadHighScores()
 	for (auto& i : Results)
 	{
 		y = y + 50;
-		p = i.getDeaths() + "	 " + i.getTime() + "	 " + i.getBest();
+		p = i.getDeaths() + "			" + "		" + i.getTime() + "			" + i.getBest();
 		this->highScoreText.setFont(font);
 		this->highScoreText.setCharacterSize(40);
 		this->highScoreText.setStyle(sf::Text::Bold);
-		this->highScoreText.setPosition(760, 200+y);
+		this->highScoreText.setPosition(700, 200+y);
 		this->highScoreText.setString(p);
 		texts.push_back(this->highScoreText);
 	}
