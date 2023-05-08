@@ -729,16 +729,17 @@ void menuHighScore::loadHighScores()
 	highScoreFile.open("Saves/highscore.txt");
 	string deaths;
 	string time;
-	string best;
+	float best;
 	while (!highScoreFile.eof())
 	{
 		highScoreFile>>deaths>>time>>best;
-	
 		result x(deaths,time,best);
+		cout << x;
 		Results.push_back(x);
 
 	}
 	highScoreFile.close();
+	sort(Results.begin(), Results.end());
 	font.loadFromFile("Fonts/arial.ttf");
 	if (!this->font.loadFromFile("Fonts/arial.ttf"))
 	{
@@ -746,11 +747,10 @@ void menuHighScore::loadHighScores()
 	}
 	string p;
 	int y = 0;
-	sort(Results.begin(), Results.end());
 	for (auto& i : Results)
 	{
 		y = y + 50;
-		p = i.getDeaths() + "			" + "		" + i.getTime() + "			" + i.getBest();
+		p = i.getDeaths() + "			" + "		" + i.getTime() + "			" + to_string(i.getBest());
 		this->highScoreText.setFont(font);
 		this->highScoreText.setCharacterSize(40);
 		this->highScoreText.setStyle(sf::Text::Bold);
