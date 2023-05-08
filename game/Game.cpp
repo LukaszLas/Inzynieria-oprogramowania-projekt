@@ -392,7 +392,7 @@ void Game::update()
 	sf::FloatRect endOfGameBounds = endOfGame.getGlobalBounds();
 	if (endOfGameBounds.intersects(character.getGlobalBounds())&&gameEnded==false)
 	{
-		highscorefile.open("Saves/highscore.txt");
+		highscorefile.open("Saves/highscore.txt", ofstream::app);
 		highscorefile << deathCounter << " " << static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC << " " << duration<<endl;
 		highscorefile.close();
 		gameEnded = true;
@@ -737,7 +737,6 @@ void menuHighScore::loadHighScores()
 
 	}
 	highScoreFile.close();
-	sort(Results.begin(), Results.end());
 	font.loadFromFile("Fonts/arial.ttf");
 	if (!this->font.loadFromFile("Fonts/arial.ttf"))
 	{
@@ -745,6 +744,7 @@ void menuHighScore::loadHighScores()
 	}
 	string p;
 	int y = 0;
+	sort(Results.begin(), Results.end());
 	for (auto& i : Results)
 	{
 		y = y + 50;
@@ -761,6 +761,7 @@ void menuHighScore::loadHighScores()
 
 void menuHighScore::showHighScores()
 {
+
 	for (auto& i : texts)
 	{
 		this->windowMenuHighScore.draw(i);
