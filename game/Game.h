@@ -182,9 +182,9 @@ class result
 private:
 	string deaths;
 	string time;
-	string best;
+	float best;
 public:
-	result(string _deaths, string _time, string _best) { this->deaths = _deaths;  this->time = _time; this->best = _best;}
+	result(string _deaths, string _time, float _best) { this->deaths = _deaths;  this->time = _time; this->best = _best;}
 	friend std::ostream& operator<<(std::ostream& os, const result& res)
 	{
 		os << "Deaths: " << res.deaths << ", Time: " << res.time << ", Best: " << res.best<<endl;
@@ -198,13 +198,9 @@ public:
 	{
 		return best > other.best;
 	}
-	bool operator<=(const result& other) const
-	{
-		return best <= other.best;
-	}
 	string getDeaths() { return this->deaths; }
 	string getTime() { return this->time; }
-	string getBest() { return this->best; }
+	float getBest() { return this->best; }
 };
 class menuHighScore
 {
