@@ -192,7 +192,7 @@ public:
 	}
 	bool operator<(const result& other) const
 	{
-		return best <= other.best;
+		return best < other.best;
 	}
 	bool operator<=(const result& other) const
 	{

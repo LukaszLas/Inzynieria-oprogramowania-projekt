@@ -308,20 +308,23 @@ const string Game::getAsString() const
 {
 	stringstream ss;
 	ss << this->character.getPosition().x << " " << this->character.getPosition().y << " " 
-	   << this->currentLevel << " " << this->totalCoins << " " << this->deathCounter;
+	   << this->currentLevel << " " << this->totalCoins;
 	return ss.str();
 }
 
 void Game::saveGame()
 {
-	this->gameSave.open("Saves/gamesave.txt");
-	if (this->gameSave.is_open())
+	if (this->deathCounter==0;)
 	{
-		this->gameSave << getAsString();
-	}
-	else
-	{
-		cout << "Error: could not save!";
+		this->gameSave.open("Saves/gamesave.txt");
+		if (this->gameSave.is_open())
+		{
+			this->gameSave << getAsString();
+		}
+		else
+		{
+			cout << "Error: could not save!";
+		}
 	}
 }
 
@@ -331,14 +334,13 @@ void Game::loadGame()
 	if (this->gameLoad.is_open())
 	{
 		sf::Vector2f position;
-		int level=0, coins=0, deaths=0;
+		int level=0, coins=0;
 
-		this->gameLoad >> position.x >> position.y >> level >> coins >> deaths;
+		this->gameLoad >> position.x >> position.y >> level >> coins;
 
 		this->character.setPosition(position);
 		this->currentLevel = level;
 		this->totalCoins = coins;
-		this->deathCounter = deaths;
 
 		this->initObjects();
 		this->initText();
@@ -392,7 +394,7 @@ void Game::update()
 	sf::FloatRect endOfGameBounds = endOfGame.getGlobalBounds();
 	if (endOfGameBounds.intersects(character.getGlobalBounds())&&gameEnded==false)
 	{
-		highscorefile.open("Saves/highscore.txt");
+		highscorefile.open("Saves/highscore.txt", ofstream::app);
 		highscorefile << deathCounter << " " << static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC << " " << duration<<endl;
 		highscorefile.close();
 		gameEnded = true;
