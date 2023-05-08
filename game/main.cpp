@@ -19,7 +19,7 @@ void operator delete (void* ptr, size_t size)
 
 int main()
 {
-
+	string select;
 	sf::RenderWindow menu(sf::VideoMode(1920,1080),"menu", sf::Style::Fullscreen);
 	Font font;
 	font.loadFromFile("Fonts/arial.ttf");
@@ -49,13 +49,15 @@ int main()
 				if (startGameText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
 				{
 					menuVisible = false;
-					
+					select = "game";
 					menu.close();
 
 				}
 				else if (highScoreText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
 				{
-					// Obsługa wyboru "High Score"
+					menuVisible = false;
+					select = "highscore";
+					menu.close();
 				}
 				else if (exitText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
 				{
@@ -72,24 +74,36 @@ int main()
 			menu.draw(highScoreText);
 			menu.draw(exitText);
 		}
-		else
+		else if (select=="game")
 		{
 			Game game;
-
 			while (game.getWindowIsOpen())
 			{
+				if (select == "highscore")
+					game.setCurrentLevel(-1);
 				//Update
 				game.update();
 
 				//Render
 				game.render();
-				std::cout << "Mem allocated: " << memoryAllocated << endl;
+				//std::cout << "Mem allocated: " << memoryAllocated << endl;
 			}
 			 menu.create(sf::VideoMode(1920, 1080), "menu", sf::Style::Fullscreen);
 			 menu.draw(backgroundSprite);
 			 menu.draw(startGameText);
 			 menu.draw(highScoreText);
 			 menu.draw(exitText);
+		}
+		else if (select=="highscore")
+		{
+			menuHighScore obj;
+			obj.run();
+			menuVisible = true;
+			menu.create(sf::VideoMode(1920, 1080), "menu", sf::Style::Fullscreen);
+			menu.draw(backgroundSprite);
+			menu.draw(startGameText);
+			menu.draw(highScoreText);
+			menu.draw(exitText);
 		}
 		menuVisible = true;
 
@@ -102,7 +116,7 @@ int main()
 	
 	//init game
 
-	std::cout << "Mem allocated: " << memoryAllocated;
+	//std::cout << "Mem allocated: " << memoryAllocated;
 	return 0;
 
 

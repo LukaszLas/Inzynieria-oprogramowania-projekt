@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 using namespace std;
+using namespace sf;
 
 
 class classSpikeTrap
@@ -79,7 +80,10 @@ private:
 	sf::RectangleShape endOfLevel;
 	sf::Sprite endOfLevelSprite;
 	sf::Texture endOfLevelTexture;
-	
+
+	sf::RectangleShape endOfGame;
+	sf::Sprite endOfGameSprite;
+	sf::Texture endOfGameTexture;
 
 	//UI
 	sf::Font font;
@@ -112,6 +116,7 @@ private:
 	void createSpikeTrap(float sizeX, float positionX, float positionY);
 	void createAbyss(float sizeX, float sizeY, float positionX, float positionY);
 	void createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY);
+	void createEndOfGame(float sizeX, float sizeY, float positionX, float positionY);
 	void createCoin(float radius, float positionX, float positionY);
 	void initFont();
 	void initText();
@@ -141,6 +146,7 @@ private:
 	bool moveRight = true;
 	float duration;
 	clock_t timeStart =clock();
+	clock_t totalTime=clock();
 	int deathCounter = 0;
 	int spikeTrapTimer = 0;
 	//float spikeTrapMoveRange = 20;
@@ -149,8 +155,10 @@ private:
 	int currentLevel = 0;
 	bool levelUpdate = true;
 	int totalCoins = 0;
+	bool gameEnded = false;
 	ofstream gameSave;
 	ifstream gameLoad;
+	ofstream highscorefile;
 
 
 public:
@@ -165,6 +173,78 @@ public:
 	void moveEnemy();
 	void moveSpikeTrap();
 	float getDT() { return dt; }
+	void setCurrentLevel(int i) { this->currentLevel = i; }
 	sf::IntRect uvRect;
 };
 
+class result
+{
+private:
+	string deaths;
+	string time;
+	string best;
+public:
+	result(string _deaths, string _time, string _best) { this->deaths = _deaths;  this->time = _time; this->best = _best;}
+	friend std::ostream& operator<<(std::ostream& os, const result& res)
+	{
+		os << "Deaths: " << res.deaths << ", Time: " << res.time << ", Best: " << res.best<<endl;
+		return os;
+	}
+	bool operator<(const result& other) const
+	{
+		return best <= other.best;
+	}
+	bool operator<=(const result& other) const
+	{
+		return best <= other.best;
+	}
+	string getDeaths() { return this->deaths; }
+	string getTime() { return this->time; }
+	string getBest() { return this->best; }
+};
+class menuHighScore
+{
+private:
+
+	sf::RenderWindow windowMenuHighScore;
+	sf::Font font;
+	Text highScoreText;
+	vector<result> Results;
+	vector<sf::Text> texts;
+	void loadHighScores();
+	void showHighScores();
+
+public:
+	menuHighScore()
+	{
+		windowMenuHighScore.create(sf::VideoMode::getFullscreenModes()[0], "Fullscreen Window", sf::Style::Fullscreen);
+		font.loadFromFile("Fonts/arial.ttf");
+
+	}
+	void run()
+	{
+		loadHighScores();
+
+		while (windowMenuHighScore.isOpen())
+		{
+			sf::Event event;
+			while (windowMenuHighScore.pollEvent(event))
+			{
+				if (event.type == sf::Event::Closed)
+				{
+					windowMenuHighScore.close();
+				}
+				else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+				{
+					windowMenuHighScore.close();
+				}
+			}
+
+			showHighScores();
+			windowMenuHighScore.display();
+		}
+
+
+	}
+
+};

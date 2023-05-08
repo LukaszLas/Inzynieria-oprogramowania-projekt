@@ -58,6 +58,9 @@ void Game::initObjects()
 
 	switch (this->currentLevel)
 	{
+	case -1:
+		cout << "xd";
+		break;
 	case 0:
 		platforms.clear();
 		abysses.clear();
@@ -106,6 +109,14 @@ void Game::initObjects()
 		createAbyss(1680, 9, 0, 1070);
 		createEndOfLevel(50, 100, 400, 200);
 		break;
+	case 2:
+		platforms.clear();
+		abysses.clear();
+		spikeTraps.clear();
+		movingEnemys.clear();
+		coins.clear();
+		createEndOfLevel(50, 100, 400, 2200);
+		createEndOfGame(50, 100, 1030, 800);
 	default:
 		break;
 	}
@@ -155,6 +166,14 @@ void Game::createEndOfLevel(float sizeX, float sizeY, float positionX, float pos
 	this->endOfLevel.setPosition(positionX, positionY);
 }
 
+void Game::createEndOfGame(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->endOfGame.setSize(sf::Vector2f(sizeX, sizeY));
+	this->endOfGame.setTexture(&endOfLevelTexture);
+	this->endOfGame.setPosition(positionX, positionY);
+	this->endOfGame.setFillColor(sf::Color::Red);
+}
+
 void Game::createCoin(float radius, float positionX, float positionY)
 {
 		classCoin coin;
@@ -198,6 +217,10 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->endOfGameTexture.loadFromFile("Images/door.png"))
+	{
+		cout << "Error initTexture";
+	}
 }
 
 void Game::initSprite()
@@ -208,6 +231,7 @@ void Game::initSprite()
 	this->abyssSprite.setTexture(this->abyssTexture);
 	this->spikesSprite.setTexture(this->spikesTexture);
 	this->endOfLevelSprite.setTexture(this->endOfLevelTexture);
+	this->endOfGameSprite.setTexture(this->endOfLevelTexture);
 	this->backgroundSprite.setTexture(this->backgroundTexture);
 	this->coinSprite.setTexture(this->coinTexture);
 }
@@ -329,6 +353,8 @@ void Game::loadGame()
 //Constructors /Destructor
 Game::Game()
 {
+
+	
 	this->initVariable();
 	this->initWindow();
 	this->initCharacter();
@@ -339,6 +365,7 @@ Game::Game()
 	this->initTimerText();
 	this->initAudio();
 	this->initSound();
+	
 }
 
 Game::~Game()
@@ -361,6 +388,15 @@ void Game::update()
 	clock_t timeStop = clock();
 	duration = static_cast<float>(timeStop - timeStart) / CLOCKS_PER_SEC;
 	TimerText.setString(to_string(duration));
+	//end of game collision
+	sf::FloatRect endOfGameBounds = endOfGame.getGlobalBounds();
+	if (endOfGameBounds.intersects(character.getGlobalBounds())&&gameEnded==false)
+	{
+		highscorefile.open("Saves/highscore.txt");
+		highscorefile << deathCounter << " " << static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC << " " << duration<<endl;
+		highscorefile.close();
+		gameEnded = true;
+	}
 	if (levelUpdate)
 	{
 		this->initObjects();
@@ -428,12 +464,13 @@ void Game::render()
 	{
 		this->window->draw(i);
 	}
+	this->window->draw(this->endOfGame);
+
 	//draw UI
 	this->window->draw(this->deathCounterText);
 	this->window->draw(this->TimerText);
 	this->window->draw(this->currentLevelText);
 	this->window->draw(this->totalCoinsText);
-
 	this->window->display();
 }
 
@@ -681,5 +718,51 @@ void Game::moveSpikeTrap()
 				spikeTrap.spikeTrap.move(0.f, 0.5f);
 			}
 		}
+	}
+}
+
+void menuHighScore::loadHighScores()
+{
+	ifstream highScoreFile;
+	highScoreFile.open("Saves/highscore.txt");
+	string deaths;
+	string time;
+	string best;
+	while (!highScoreFile.eof())
+	{
+		highScoreFile>>deaths>>time>>best;
+	
+		result x(deaths,time,best);
+		Results.push_back(x);
+
+	}
+	highScoreFile.close();
+	sort(Results.begin(), Results.end());
+	font.loadFromFile("Fonts/arial.ttf");
+	if (!this->font.loadFromFile("Fonts/arial.ttf"))
+	{
+		cout << "Error initFont";
+	}
+	string p;
+	int y = 0;
+	for (auto& i : Results)
+	{
+		y = y + 50;
+		p = i.getDeaths() + "	 " + i.getTime() + "	 " + i.getBest();
+		this->highScoreText.setFont(font);
+		this->highScoreText.setCharacterSize(40);
+		this->highScoreText.setStyle(sf::Text::Bold);
+		this->highScoreText.setPosition(760, 200+y);
+		this->highScoreText.setString(p);
+		texts.push_back(this->highScoreText);
+	}
+	
+}
+
+void menuHighScore::showHighScores()
+{
+	for (auto& i : texts)
+	{
+		this->windowMenuHighScore.draw(i);
 	}
 }
