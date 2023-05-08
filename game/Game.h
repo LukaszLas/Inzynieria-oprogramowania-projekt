@@ -152,7 +152,7 @@ private:
 	//float spikeTrapMoveRange = 20;
 	bool moveUp = true;
 	float startingpos;
-	int currentLevel = 0;
+	int currentLevel = 2;
 	bool levelUpdate = true;
 	int totalCoins = 0;
 	bool gameEnded = false;
@@ -193,6 +193,10 @@ public:
 	bool operator<(const result& other) const
 	{
 		return best < other.best;
+	}
+	bool operator>(const result& other) const
+	{
+		return best > other.best;
 	}
 	bool operator<=(const result& other) const
 	{
@@ -239,7 +243,7 @@ public:
 					windowMenuHighScore.close();
 				}
 			}
-
+			windowMenuHighScore.clear();
 			showHighScores();
 			windowMenuHighScore.display();
 		}
