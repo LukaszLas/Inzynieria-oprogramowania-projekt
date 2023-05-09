@@ -78,11 +78,11 @@ void Game::initObjects()
 		createSpikeTrap(30, 400, 700);
 		createSpikeTrap(30, 450, 700);
 		createMovingEnemies(1350, 1020, 160, 160);
-		createAbyss(100, 9, 650, 1070);
-		createAbyss(100, 9, 830, 1070);
-		createAbyss(380, 19, 650, 800);
-		createAbyss(420, 9, 150, 1070);
-		createAbyss(310, 19, 1070, 500);
+		createAbyss(100, 11, 650, 1070,"lava");
+		createAbyss(100,11, 830, 1070,"lava");
+		createAbyss(380, 19, 650, 800,"abyss");
+		createAbyss(420, 11, 150, 1070,"lava");
+		createAbyss(310, 19, 1070, 500,"abyss");
 		createCoin(20, 1350, 330);
 		createCoin(20, 1350, 380);
 		createCoin(20, 570, 500);
@@ -106,7 +106,7 @@ void Game::initObjects()
 		createPlatform(50, 20, 1760, 1200);
 		createPlatform(1920, 7, 0, 1073);
 		createSpikeTrap(50, 720, 600);
-		createAbyss(1680, 9, 0, 1070);
+		createAbyss(1680, 11, 0, 1070,"lava");
 		createEndOfLevel(50, 100, 400, 200);
 		break;
 	case 2:
@@ -141,11 +141,15 @@ void Game::createPlatform(float sizeX, float sizeY, float positionX, float posit
 	this->platforms.push_back(this->platform);
 }
 
-void Game::createAbyss(float sizeX, float sizeY, float positionX, float positionY)
+void Game::createAbyss(float sizeX, float sizeY, float positionX, float positionY, string typeTexture)
 {
 	this->abyss.setSize(sf::Vector2f(sizeX, sizeY));
 	this->abyss.setPosition(positionX, positionY);
-	this->abyss.setTexture(&abyssTexture);
+	if (typeTexture == "abyss")
+		this->abyss.setTexture(&abyssTexture);
+	else
+		this->abyss.setTexture(&lavaTexture);
+
 	this->abysses.push_back(this->abyss);
 }
 
@@ -221,6 +225,10 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->lavaTexture.loadFromFile("Images/lava.png"))
+	{
+		cout << "Error initTexture";
+	}
 }
 
 void Game::initSprite()
@@ -234,6 +242,7 @@ void Game::initSprite()
 	this->endOfGameSprite.setTexture(this->endOfLevelTexture);
 	this->backgroundSprite.setTexture(this->backgroundTexture);
 	this->coinSprite.setTexture(this->coinTexture);
+	this->lavaSprite.setTexture(this->lavaTexture);
 }
 
 void Game::initFont()
@@ -314,6 +323,12 @@ const string Game::getAsString() const
 
 void Game::saveGame()
 {
+	/* 
+	clock_t timeStop=clock() ;
+	   static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC   czas ca³kowity
+	   duration = static_cast<float>(timeStop - timeStart) / CLOCKS_PER_SEC; obecny czas
+
+	*/
 	if (this->deathCounter==0)
 	{
 		this->gameSave.open("Saves/gamesave.txt");
@@ -330,6 +345,12 @@ void Game::saveGame()
 
 void Game::loadGame()
 {
+	/*
+		wczytanie danych:
+		this->timeStart;
+		this->totalTime;
+	
+	*/
 	this->gameLoad.open("Saves/gamesave.txt");
 	if (this->gameLoad.is_open())
 	{

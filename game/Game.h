@@ -62,6 +62,9 @@ private:
 	//Enemies
 	sf::Sprite abyssSprite;
 	sf::Texture abyssTexture;
+	sf::Sprite lavaSprite;
+	sf::Texture lavaTexture;
+
 	vector<sf::RectangleShape> abysses;
 	sf::RectangleShape abyss;
 	vector<sf::RectangleShape> movingEnemys;
@@ -114,7 +117,7 @@ private:
 	void initEnemies();
 	void createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft);
 	void createSpikeTrap(float sizeX, float positionX, float positionY);
-	void createAbyss(float sizeX, float sizeY, float positionX, float positionY);
+	void createAbyss(float sizeX, float sizeY, float positionX, float positionY, string typeTexture);
 	void createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY);
 	void createEndOfGame(float sizeX, float sizeY, float positionX, float positionY);
 	void createCoin(float radius, float positionX, float positionY);
@@ -159,7 +162,6 @@ private:
 	ofstream gameSave;
 	ifstream gameLoad;
 	ofstream highscorefile;
-
 
 public:
 	Game();
