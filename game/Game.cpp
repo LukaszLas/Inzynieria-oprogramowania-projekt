@@ -751,41 +751,68 @@ void menuHighScore::loadHighScores()
 	string deaths;
 	string time;
 	float best;
+	int max = 0;
 	while (!highScoreFile.eof())
 	{
+		
 		highScoreFile>>deaths>>time>>best;
-		result x(deaths,time,best);
+		result x(deaths,time,round(best*1000)/1000);
 		cout << x;
 		Results.push_back(x);
-
+		max++;
+		if (max > 10)
+			break;
 	}
 	highScoreFile.close();
+	Results.pop_back();
 	sort(Results.begin(), Results.end());
 	font.loadFromFile("Fonts/arial.ttf");
+	cout << Results[0];
 	if (!this->font.loadFromFile("Fonts/arial.ttf"))
 	{
 		cout << "Error initFont";
 	}
-	string p;
+	string p,b;
 	int y = 0;
 	for (auto& i : Results)
 	{
 		y = y + 50;
-		p = i.getDeaths() + "			" + "		" + i.getTime() + "			" + to_string(i.getBest());
-		this->highScoreText.setFont(font);
-		this->highScoreText.setCharacterSize(40);
-		this->highScoreText.setStyle(sf::Text::Bold);
-		this->highScoreText.setPosition(700, 200+y);
-		this->highScoreText.setString(p);
-		texts.push_back(this->highScoreText);
+		p = i.getDeaths();
+		this->highScoreTextDeath.setFont(font);
+		this->highScoreTextDeath.setCharacterSize(40);
+		this->highScoreTextDeath.setStyle(sf::Text::Bold);
+		this->highScoreTextDeath.setPosition(700, 200+y);
+		this->highScoreTextDeath.setString(p);
+		textsDeath.push_back(this->highScoreTextDeath);
+		p = i.getTime() ;
+		this->highScoreTextTotal.setFont(font);
+		this->highScoreTextTotal.setCharacterSize(40);
+		this->highScoreTextTotal.setStyle(sf::Text::Bold);
+		this->highScoreTextTotal.setPosition(900, 200 + y);
+		this->highScoreTextTotal.setString(p);
+		textsTotal.push_back(this->highScoreTextTotal);
+		p = i.getBestStr();
+		this->highScoreTextBest.setFont(font);
+		this->highScoreTextBest.setCharacterSize(40);
+		this->highScoreTextBest.setStyle(sf::Text::Bold);
+		this->highScoreTextBest.setPosition(1200, 200 + y);
+		this->highScoreTextBest.setString(p);
+		textsBest.push_back(this->highScoreTextBest);
 	}
 	
 }
 
 void menuHighScore::showHighScores()
 {
-
-	for (auto& i : texts)
+	for (auto& i : textsDeath)
+	{
+		this->windowMenuHighScore.draw(i);
+	}
+	for (auto& i : textsBest)
+	{
+		this->windowMenuHighScore.draw(i);
+	}
+	for (auto& i : textsTotal)
 	{
 		this->windowMenuHighScore.draw(i);
 	}

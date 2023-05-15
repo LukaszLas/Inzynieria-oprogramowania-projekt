@@ -189,7 +189,7 @@ public:
 	result(string _deaths, string _time, float _best) { this->deaths = _deaths;  this->time = _time; this->best = _best;}
 	friend std::ostream& operator<<(std::ostream& os, const result& res)
 	{
-		os << "Deaths: " << res.deaths << ", Time: " << res.time << ", Best: " << res.best<<endl;
+		os << "Deaths: " << res.deaths << ", Time: " << res.time << ", Best: " << res.best <<endl;
 		return os;
 	}
 	bool operator<(const result& other) const
@@ -203,6 +203,13 @@ public:
 	string getDeaths() { return this->deaths; }
 	string getTime() { return this->time; }
 	float getBest() { return this->best; }
+	string getBestStr() 
+	{
+		string x= to_string(this->best);
+		x=x.substr(0,6);
+		cout << x;
+		return x;
+	}
 };
 class menuHighScore
 {
@@ -210,9 +217,13 @@ private:
 
 	sf::RenderWindow windowMenuHighScore;
 	sf::Font font;
-	Text highScoreText;
+	Text highScoreTextDeath;
+	Text highScoreTextTotal;
+	Text highScoreTextBest;
 	vector<result> Results;
-	vector<sf::Text> texts;
+	vector<sf::Text> textsDeath;
+	vector<sf::Text> textsTotal;
+	vector<sf::Text> textsBest;
 	void loadHighScores();
 	void showHighScores();
 
