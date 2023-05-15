@@ -224,15 +224,18 @@ private:
 	vector<sf::Text> textsDeath;
 	vector<sf::Text> textsTotal;
 	vector<sf::Text> textsBest;
+	Texture backgroundTexture;
+	Sprite backgroundSprite;
 	void loadHighScores();
 	void showHighScores();
 
 public:
+	void initBackground();
+
 	menuHighScore()
 	{
 		windowMenuHighScore.create(sf::VideoMode::getFullscreenModes()[0], "Fullscreen Window", sf::Style::Fullscreen);
 		font.loadFromFile("Fonts/arial.ttf");
-
 	}
 	void run()
 	{
@@ -253,7 +256,9 @@ public:
 				}
 			}
 			windowMenuHighScore.clear();
+			initBackground();
 			showHighScores();
+
 			windowMenuHighScore.display();
 		}
 

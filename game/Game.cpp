@@ -788,14 +788,14 @@ void menuHighScore::loadHighScores()
 		this->highScoreTextTotal.setFont(font);
 		this->highScoreTextTotal.setCharacterSize(40);
 		this->highScoreTextTotal.setStyle(sf::Text::Bold);
-		this->highScoreTextTotal.setPosition(900, 200 + y);
+		this->highScoreTextTotal.setPosition(1200, 200 + y);
 		this->highScoreTextTotal.setString(p);
 		textsTotal.push_back(this->highScoreTextTotal);
 		p = i.getBestStr();
 		this->highScoreTextBest.setFont(font);
 		this->highScoreTextBest.setCharacterSize(40);
 		this->highScoreTextBest.setStyle(sf::Text::Bold);
-		this->highScoreTextBest.setPosition(1200, 200 + y);
+		this->highScoreTextBest.setPosition(900, 200 + y);
 		this->highScoreTextBest.setString(p);
 		textsBest.push_back(this->highScoreTextBest);
 	}
@@ -816,4 +816,14 @@ void menuHighScore::showHighScores()
 	{
 		this->windowMenuHighScore.draw(i);
 	}
+}
+
+void menuHighScore::initBackground()
+{
+	backgroundTexture.loadFromFile("Images/highscore.png");
+	backgroundSprite.setTexture(backgroundTexture);
+	backgroundSprite.setPosition(0, 0);
+	backgroundSprite.setScale(1.0f, 1.0f);
+	windowMenuHighScore.draw(backgroundSprite);
+
 }
