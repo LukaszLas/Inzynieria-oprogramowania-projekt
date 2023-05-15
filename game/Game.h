@@ -31,14 +31,21 @@ class classCoin
 {
 private:
 	bool isCollected = false;
+	bool isVisible = false;
 public:
 	sf::CircleShape coin;
 	void setCoinRadius(float radius) { this->coin.setRadius(radius); }
 	void setCoinPosition(float x, float y) { this->coin.setPosition(x, y); }
 	void setCoinTexture(sf::Texture& texture) { this->coin.setTexture(&texture); }
 	void setIsCollected() { this->isCollected = true; }
+	void setIsVisible(int option) 
+	{
+		if (option == 1) this->isVisible = true; 
+		else if (option == 0) this->isVisible = false;
+	}
 	sf::FloatRect getCoinGlobalBounds() { return this->coin.getGlobalBounds(); }
 	bool getIsCollected() { return this->isCollected; }
+	bool getIsVisible() { return this->isVisible; }
 };
 
 class Game
@@ -115,12 +122,13 @@ private:
 	void createPlatform(float sizeX, float sizeY, float positionX, float positionY);
 	void initSprite();
 	void initEnemies();
+	void initCoins();
 	void createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft);
 	void createSpikeTrap(float sizeX, float positionX, float positionY);
 	void createAbyss(float sizeX, float sizeY, float positionX, float positionY, string typeTexture);
 	void createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY);
 	void createEndOfGame(float sizeX, float sizeY, float positionX, float positionY);
-	void createCoin(float radius, float positionX, float positionY);
+	void createCoin(float radius, float positionX, float positionY, int visibility);
 	void initFont();
 	void initText();
 	void initTimerText();

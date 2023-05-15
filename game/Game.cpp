@@ -40,6 +40,18 @@ void Game::initEnemies()
 	//createMovingEnemies(200, 200, 100, 100);
 }
 
+void Game::initCoins()
+{
+	// lvl 1
+	createCoin(20, 1350, 330, 1);
+	createCoin(20, 1350, 380, 1);
+	createCoin(20, 570, 500, 1);
+	createCoin(20, 280, 800, 1);
+	createCoin(20, 1775, 1025, 1);
+	// lvl 2
+	createCoin(20, 1890, 880, 0);
+}
+
 void Game::createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft)
 {
 	this->movingEnemy.setPosition(positionX, positionY);
@@ -66,7 +78,6 @@ void Game::initObjects()
 		abysses.clear();
 		spikeTraps.clear();
 		movingEnemys.clear();
-		coins.clear();
 		createPlatform(100, 20, 250, 850);
 		createPlatform(100, 20, 370, 700);
 		createPlatform(100, 20, 50, 950);
@@ -83,19 +94,21 @@ void Game::initObjects()
 		createAbyss(380, 19, 650, 800,"abyss");
 		createAbyss(420, 11, 150, 1070,"lava");
 		createAbyss(310, 19, 1070, 500,"abyss");
-		createCoin(20, 1350, 330);
-		createCoin(20, 1350, 380);
-		createCoin(20, 570, 500);
-		createCoin(20, 280, 800);
-		createCoin(20, 1775, 1025);
 		createEndOfLevel(50, 100, 1870, 980);
+		for (int i = 0; i < 5; i++)
+		{
+			coins[i].setIsVisible(1);
+		}
+		for (size_t i = 5; i < coins.size(); i++)
+		{
+			coins[i].setIsVisible(0);
+		}
 		break;
 	case 1:
 		platforms.clear();
 		abysses.clear();
 		spikeTraps.clear();
 		movingEnemys.clear();
-		coins.clear();
 		createPlatform(50, 20, 620, 500);
 		createPlatform(50, 20, 720, 600);
 		createPlatform(50, 20, 850, 700);
@@ -108,6 +121,14 @@ void Game::initObjects()
 		createSpikeTrap(50, 720, 600);
 		createAbyss(1680, 11, 0, 1070,"lava");
 		createEndOfLevel(50, 100, 400, 200);
+		for (int i = 0; i < 5; i++)
+		{
+			coins[i].setIsVisible(0);
+		}
+		for (size_t i = 5; i < coins.size(); i++)
+		{
+			coins[i].setIsVisible(1);
+		}
 		break;
 	case 2:
 		platforms.clear();
@@ -178,12 +199,13 @@ void Game::createEndOfGame(float sizeX, float sizeY, float positionX, float posi
 	this->endOfGame.setFillColor(sf::Color::Red);
 }
 
-void Game::createCoin(float radius, float positionX, float positionY)
+void Game::createCoin(float radius, float positionX, float positionY, int visibility)
 {
 		classCoin coin;
 		coin.setCoinRadius(radius);
 		coin.setCoinPosition(positionX, positionY);
 		coin.setCoinTexture(coinTexture);
+		coin.setIsVisible(visibility);
 		coins.push_back(coin);
 }
 
@@ -315,20 +337,23 @@ void Game::initSound()
 
 const string Game::getAsString() const
 {
+	clock_t timeStop = clock();
+	float currentTIME = static_cast<float>(timeStop - timeStart) / CLOCKS_PER_SEC;
 	stringstream ss;
-	ss << this->character.getPosition().x << " " << this->character.getPosition().y << " " 
-	   << this->currentLevel << " " << this->totalCoins;
+
+
+	ss << this->character.getPosition().x << " " << this->character.getPosition().y << " "
+		<< this->currentLevel << " " << this->totalCoins << " " << currentTIME << " "
+		<< this->coins.size(); //<< " ";
+	//for (size_t i = 0; i < coins.size(); i++)
+	//{
+	//	 ss << this->coins[i].getIsCollected() << " " << this->coins[i].getIsVisible() << " ";
+	//}
 	return ss.str();
 }
 
 void Game::saveGame()
 {
-	/* 
-	clock_t timeStop=clock() ;
-	   static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC   czas ca³kowity
-	   duration = static_cast<float>(timeStop - timeStart) / CLOCKS_PER_SEC; obecny czas
-
-	*/
 	if (this->deathCounter==0)
 	{
 		this->gameSave.open("Saves/gamesave.txt");
@@ -356,13 +381,16 @@ void Game::loadGame()
 	{
 		sf::Vector2f position;
 		int level=0, coins=0;
+		float currentTIME;
 
-		this->gameLoad >> position.x >> position.y >> level >> coins;
+		this->gameLoad >> position.x >> position.y >> level >> coins >> currentTIME;
 
 		this->character.setPosition(position);
 		this->currentLevel = level;
 		this->totalCoins = coins;
 		this->deathCounter = 0;
+		this->timeStart = currentTIME;
+		this->totalTime = currentTIME;
 
 		this->initObjects();
 		this->initText();
@@ -381,6 +409,7 @@ Game::Game()
 	this->initVariable();
 	this->initWindow();
 	this->initCharacter();
+	this->initCoins();
 	this->initObjects();
 	//this->initEnemies();
 	this->initFont();
@@ -478,7 +507,7 @@ void Game::render()
 	}
 	for (size_t i = 0; i < this->coins.size(); i++)
 	{
-		if(this->coins[i].getIsCollected() == false)
+		if(!(this->coins[i].getIsCollected()) && this->coins[i].getIsVisible())
 		{
 			this->window->draw(coins[i].coin);
 		}
@@ -645,13 +674,14 @@ void Game::moveCharacter()
 	//coin collision
 	for (size_t i = 0; i < coins.size(); i++)
 	{
-		if (coins[i].getCoinGlobalBounds().intersects(character.getGlobalBounds()))
+		if (coins[i].getCoinGlobalBounds().intersects(character.getGlobalBounds()) && !(coins[i].getIsCollected()) && coins[i].getIsVisible())
 		{
 			this->coinPickUpSound.play();
 			coins[i].setIsCollected();
+			coins[i].setIsVisible(2);
 			this->totalCoins++;
 			this->totalCoinsText.setString("Coins: " + to_string(this->totalCoins));
-			coins.erase(coins.begin() + i);
+			//coins.erase(coins.begin() + i);
 		}
 	}
 
