@@ -84,8 +84,10 @@ void Game::initObjects()
 		createPlatform(1920, 7, 0, 1073);
 		createPlatform(150, 20, 520, 550);
 		createPlatform(100, 20, 750, 425);
+		createPlatform(25, 20, 550, 300);
 		createPlatform(100, 20, 1000, 425);
 		createPlatform(40, 20, 1350, 425);
+		createPlatform(200, 20, 250, 205);
 		createSpikeTrap(30, 400, 700);
 		createSpikeTrap(30, 450, 700);
 		createMovingEnemies(1350, 1020, 160, 160);
@@ -94,6 +96,7 @@ void Game::initObjects()
 		createAbyss(380, 19, 650, 800,"abyss");
 		createAbyss(420, 11, 150, 1070,"lava");
 		createAbyss(310, 19, 1070, 500,"abyss");
+		createShop(200, 100, 250, 125);
 		createEndOfLevel(50, 100, 1870, 980);
 		for (int i = 0; i < 5; i++)
 		{
@@ -120,6 +123,7 @@ void Game::initObjects()
 		createPlatform(1920, 7, 0, 1073);
 		createSpikeTrap(50, 720, 600);
 		createAbyss(1680, 11, 0, 1070,"lava");
+		createShop(200, 100, 1720, 800);
 		createEndOfLevel(50, 100, 400, 200);
 		for (int i = 0; i < 5; i++)
 		{
@@ -209,6 +213,13 @@ void Game::createCoin(float radius, float positionX, float positionY, int visibi
 		coins.push_back(coin);
 }
 
+void Game::createShop(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->shop.setSize(sf::Vector2f(sizeX, sizeY));
+	this->shop.setTexture(&shopTexture);
+	this->shop.setPosition(positionX, positionY);
+}
+
 void Game::initTexture()
 {
 	if (!this->texture.loadFromFile("Images/image.png"))
@@ -251,6 +262,10 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->shopTexture.loadFromFile("Images/shop.png"))
+	{
+		cout << "Error initTexture";
+	}
 }
 
 void Game::initSprite()
@@ -265,6 +280,7 @@ void Game::initSprite()
 	this->backgroundSprite.setTexture(this->backgroundTexture);
 	this->coinSprite.setTexture(this->coinTexture);
 	this->lavaSprite.setTexture(this->lavaTexture);
+	this->shopSprite.setTexture(this->shopTexture);
 }
 
 void Game::initFont()
@@ -479,6 +495,10 @@ void Game::pollEvents()
 			{
 				this->loadGame();
 			}
+			if (this->byShop == true && this->ev.key.code == sf::Keyboard::R)
+			{
+				this->currentLevel += 1;
+			}
 			break;
 
 		}
@@ -491,6 +511,7 @@ void Game::render()
 	//draw game objects
 	
 	this->window->draw(backgroundSprite);
+	this->window->draw(this->shop);
 	this->window->draw(this->character);
 	//this->window->draw(this->movingEnemy);
 	this->window->draw(this->endOfLevel);
@@ -684,6 +705,20 @@ void Game::moveCharacter()
 			this->totalCoinsText.setString("Coins: " + to_string(this->totalCoins));
 			//coins.erase(coins.begin() + i);
 		}
+	}
+
+	//shop collision
+	sf::FloatRect shopBounds = shop.getGlobalBounds();
+	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter)
+	{
+		this->currentLevel++;
+		this->currentLevelText.setString("Level: " + to_string(this->currentLevel + 1));
+		this->levelUpdate = true;
+		this->byShop = true;
+	}
+	else
+	{
+		this->byShop = false;
 	}
 
 	character.move(velocity);

@@ -96,6 +96,10 @@ private:
 	sf::Sprite endOfGameSprite;
 	sf::Texture endOfGameTexture;
 
+	sf::RectangleShape shop;
+	sf::Sprite shopSprite;
+	sf::Texture shopTexture;
+
 	//UI
 	sf::Font font;
 	sf::Text deathCounterText;
@@ -130,6 +134,7 @@ private:
 	void createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY);
 	void createEndOfGame(float sizeX, float sizeY, float positionX, float positionY);
 	void createCoin(float radius, float positionX, float positionY, int visibility);
+	void createShop(float sizeX, float sizeY, float positionX, float positionY);
 	void initFont();
 	void initText();
 	void initTimerText();
@@ -168,6 +173,7 @@ private:
 	bool levelUpdate = true;
 	int totalCoins = 0;
 	bool gameEnded = false;
+	bool byShop = false;
 	ofstream gameSave;
 	ifstream gameLoad;
 	ofstream highscorefile;
