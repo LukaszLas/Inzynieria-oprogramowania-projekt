@@ -136,7 +136,7 @@ private:
 	void initAudio();
 	void initSound();
 
-	const string getAsString() const;
+	string getAsString();
 	void saveGame();
 	void loadGame();
 

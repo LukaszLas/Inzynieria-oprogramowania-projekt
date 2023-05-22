@@ -335,7 +335,7 @@ void Game::initSound()
 
 }
 
-const string Game::getAsString() const
+ string Game::getAsString()
 {
 	clock_t timeStop = clock();
 	float currentTIME = static_cast<float>(timeStop - timeStart) / CLOCKS_PER_SEC;
@@ -344,11 +344,12 @@ const string Game::getAsString() const
 
 	ss << this->character.getPosition().x << " " << this->character.getPosition().y << " "
 		<< this->currentLevel << " " << this->totalCoins << " " << currentTIME << " "
-		<< this->coins.size(); //<< " ";
-	//for (size_t i = 0; i < coins.size(); i++)
-	//{
-	//	 ss << this->coins[i].getIsCollected() << " " << this->coins[i].getIsVisible() << " ";
-	//}
+		<< this->coins.size() << " ";
+	for (size_t i = 0; i < coins.size(); i++)
+	{
+		 ss << this->coins[i].getIsCollected() << " " << this->coins[i].getIsVisible() << " ";
+	}
+	cout << ss.str();
 	return ss.str();
 }
 
