@@ -72,6 +72,7 @@ private:
 	sf::Sprite lavaSprite;
 	sf::Texture lavaTexture;
 
+	//Traps
 	vector<sf::RectangleShape> abysses;
 	sf::RectangleShape abyss;
 	vector<sf::RectangleShape> movingEnemys;
