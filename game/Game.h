@@ -173,7 +173,7 @@ private:
 	bool levelUpdate = true;
 	int totalCoins = 0;
 	bool gameEnded = false;
-	bool byShop = false;
+
 	ofstream gameSave;
 	ifstream gameLoad;
 	ofstream highscorefile;

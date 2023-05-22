@@ -123,7 +123,7 @@ void Game::initObjects()
 		createPlatform(1920, 7, 0, 1073);
 		createSpikeTrap(50, 720, 600);
 		createAbyss(1680, 11, 0, 1070,"lava");
-		createShop(200, 100, 1720, 800);
+		//createShop(200, 100, 1720, 800);
 		createEndOfLevel(50, 100, 400, 200);
 		for (int i = 0; i < 5; i++)
 		{
@@ -495,10 +495,6 @@ void Game::pollEvents()
 			{
 				this->loadGame();
 			}
-			if (this->byShop == true && this->ev.key.code == sf::Keyboard::R)
-			{
-				this->currentLevel += 1;
-			}
 			break;
 
 		}
@@ -711,14 +707,10 @@ void Game::moveCharacter()
 	sf::FloatRect shopBounds = shop.getGlobalBounds();
 	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter)
 	{
-		this->currentLevel++;
-		this->currentLevelText.setString("Level: " + to_string(this->currentLevel + 1));
-		this->levelUpdate = true;
-		this->byShop = true;
-	}
-	else
-	{
-		this->byShop = false;
+
+		//this->currentLevel = -1;
+		//this->levelUpdate = true;
+		
 	}
 
 	character.move(velocity);
