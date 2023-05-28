@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstdlib>
 using namespace std;
 using namespace sf;
 
@@ -46,6 +47,30 @@ public:
 	sf::FloatRect getCoinGlobalBounds() { return this->coin.getGlobalBounds(); }
 	bool getIsCollected() { return this->isCollected; }
 	bool getIsVisible() { return this->isVisible; }
+};
+
+class shopItems
+{
+private:
+	int price;
+	bool isBought = false;
+	bool isVisible = true;
+public:
+	sf::RectangleShape item;
+	void setItemSize(float x, float y) { this->item.setSize(sf::Vector2f(x, y)); }
+	void setItemPosition(float x, float y) { this->item.setPosition(x, y); }
+	void setItemTexture(sf::Texture& texture) { this->item.setTexture(&texture); }
+	void setItemPrice(int price) { this->price = price; }
+	void setIsBought() { this->isBought = true; }
+	void setItemVisibility(int option)
+	{
+		if (option == 1) this->isVisible = true;
+		else if (option == 0) this->isVisible = false;
+	}
+	sf::FloatRect getItemGlobalBounds() { return this->item.getGlobalBounds(); }
+	bool getIsBought() { return this->isBought; }
+	bool getItemVisibility() { return this->isVisible; }
+	int getItemPrice() { return this->price; }
 };
 
 class Game
@@ -96,16 +121,32 @@ private:
 	sf::Sprite endOfGameSprite;
 	sf::Texture endOfGameTexture;
 
+	sf::RectangleShape shopDoor;
+	sf::Sprite shopDoorSprite;
+	sf::Texture shopDoorTexture;
+
 	sf::RectangleShape shop;
 	sf::Sprite shopSprite;
 	sf::Texture shopTexture;
+	
+	sf::RectangleShape merchant;
+	sf::Sprite merchantSprite;
+	sf::Texture merchantTexture;
+
+	sf::RectangleShape chatBox;
+
+	vector<shopItems> items;
+	sf::Sprite itemSprite_1;
+	sf::Texture itemTexture_1;
 
 	//UI
-	sf::Font font;
+	sf::Font UIfont;
+	sf::Font dialogueFont;
 	sf::Text deathCounterText;
 	sf::Text TimerText;
 	sf::Text currentLevelText;
 	sf::Text totalCoinsText;
+	sf::Text dialogueText;
 	sf::Texture backgroundTexture;
 	sf::Sprite backgroundSprite;
 	//Audio
@@ -133,8 +174,11 @@ private:
 	void createAbyss(float sizeX, float sizeY, float positionX, float positionY, string typeTexture);
 	void createEndOfLevel(float sizeX, float sizeY, float positionX, float positionY);
 	void createEndOfGame(float sizeX, float sizeY, float positionX, float positionY);
+	void createShopDoor(float sizeX, float sizeY, float positionX, float positionY);
 	void createCoin(float radius, float positionX, float positionY, int visibility);
 	void createShop(float sizeX, float sizeY, float positionX, float positionY);
+	void spawnMerchant(float sizeX, float sizeY, float positionX, float positionY);
+	void createChatBox(float sizeX, float sizeY, float positionX, float positionY);
 	void initFont();
 	void initText();
 	void initTimerText();
@@ -173,6 +217,15 @@ private:
 	bool levelUpdate = true;
 	int totalCoins = 0;
 	bool gameEnded = false;
+	bool leftShop = false;
+	int shopTimer = 0;
+	int merchantTimer = 0;
+	bool merchantAnim = false;
+	int saveCurrentLevel;
+	float saveCharacterPosY;
+	float saveCharacterPosX;
+	int rollDialogue;
+	//vector < pair<float, float>> levelStartingPos;
 
 	ofstream gameSave;
 	ifstream gameLoad;
@@ -191,6 +244,8 @@ public:
 	void moveSpikeTrap();
 	float getDT() { return dt; }
 	void setCurrentLevel(int i) { this->currentLevel = i; }
+	void shopTimerFun();
+	void merchantAnimation();
 	sf::IntRect uvRect;
 };
 
@@ -231,7 +286,7 @@ class menuHighScore
 private:
 
 	sf::RenderWindow windowMenuHighScore;
-	sf::Font font;
+	sf::Font UIfont;
 	Text highScoreTextDeath;
 	Text highScoreTextTotal;
 	Text highScoreTextBest;
@@ -250,7 +305,7 @@ public:
 	menuHighScore()
 	{
 		windowMenuHighScore.create(sf::VideoMode::getFullscreenModes()[0], "Fullscreen Window", sf::Style::Fullscreen);
-		font.loadFromFile("Fonts/arial.ttf");
+		UIfont.loadFromFile("Fonts/arial.ttf");
 	}
 	void run()
 	{
@@ -281,3 +336,4 @@ public:
 	}
 
 };
+

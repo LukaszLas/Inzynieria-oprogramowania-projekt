@@ -67,11 +67,46 @@ void Game::createMovingEnemies(float positionX, float positionY, float moveRange
 
 void Game::initObjects()
 {
-
+	srand(time(NULL));
 	switch (this->currentLevel)
 	{
-	case -1:
-		cout << "xd";
+	case -1:                                     ///shop
+		platforms.clear();
+		abysses.clear();
+		spikeTraps.clear();
+		movingEnemys.clear();
+		createPlatform(1920, 7, 0, 1073);
+		createEndOfLevel(50, 100, 1870, 3000);
+		createShop(125, 80, 250, 3000);
+		createShopDoor(50, 100, 350, 980);
+		spawnMerchant(50, 80, 1520, 993);
+		createPlatform(300, 20, this->window_width/6, 910);
+		createPlatform(300, 20, 4*(this->window_width/6), 910);
+		createPlatform(300, 20, 800, 760);
+		createPlatform(300, 20, this->window_width/6, 610);
+		createPlatform(300, 20, 4*(this->window_width/6), 610);
+		if (rollDialogue == 1)
+		{
+			this->dialogueText.setPosition(1475.f, 970.f);
+			this->dialogueText.setString("Welcome to my shop!");
+			createChatBox(150, 30, 1470, 970);
+		}
+		else if (rollDialogue == 2)
+		{
+			this->dialogueText.setPosition(1485.f, 970.f);
+			this->dialogueText.setString("Hello adventurer!");
+			createChatBox(130, 30, 1480, 970);
+		}
+		else if (rollDialogue == 3)
+		{
+			this->dialogueText.setPosition(1445.f, 970.f);
+			this->dialogueText.setString("Hope you brought some coins!");
+			createChatBox(210, 30, 1440, 970);
+		}
+		for (int i = 0; i < coins.size(); i++)
+		{
+			coins[i].setIsVisible(0);
+		}
 		break;
 	case 0:
 		platforms.clear();
@@ -96,8 +131,12 @@ void Game::initObjects()
 		createAbyss(380, 19, 650, 800,"abyss");
 		createAbyss(420, 11, 150, 1070,"lava");
 		createAbyss(310, 19, 1070, 500,"abyss");
-		createShop(200, 100, 250, 125);
+		createShop(125, 80, 250, 125);
 		createEndOfLevel(50, 100, 1870, 980);
+		createShopDoor(50, 100, 50, 3000);
+		spawnMerchant(50, 80, 1820, 3000);
+		createChatBox(100, 20, 1495, 3000);
+		this->dialogueText.setPosition(1500.f, 3000.f);
 		for (int i = 0; i < 5; i++)
 		{
 			coins[i].setIsVisible(1);
@@ -123,8 +162,12 @@ void Game::initObjects()
 		createPlatform(1920, 7, 0, 1073);
 		createSpikeTrap(50, 720, 600);
 		createAbyss(1680, 11, 0, 1070,"lava");
-		//createShop(200, 100, 1720, 800);
+		createShopDoor(50, 100, 50, 3000);
+		createShop(125, 80, 250, 3000);
 		createEndOfLevel(50, 100, 400, 200);
+		spawnMerchant(50, 80, 1820, 3000);
+		createChatBox(100, 20, 1495, 3000);
+		this->dialogueText.setPosition(1500.f, 3000.f);
 		for (int i = 0; i < 5; i++)
 		{
 			coins[i].setIsVisible(0);
@@ -140,8 +183,13 @@ void Game::initObjects()
 		spikeTraps.clear();
 		movingEnemys.clear();
 		coins.clear();
+		createShopDoor(50, 100, 50, 3000);
+		createShop(125, 80, 250, 3000);
 		createEndOfLevel(50, 100, 400, 2200);
 		createEndOfGame(50, 100, 1030, 800);
+		spawnMerchant(50, 80, 1820, 3000);
+		createChatBox(100, 20, 1495, 3000);
+		this->dialogueText.setPosition(1500.f, 3000.f);
 	default:
 		break;
 	}
@@ -203,6 +251,13 @@ void Game::createEndOfGame(float sizeX, float sizeY, float positionX, float posi
 	this->endOfGame.setFillColor(sf::Color::Red);
 }
 
+void Game::createShopDoor(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->shopDoor.setSize(sf::Vector2f(sizeX, sizeY));
+	this->shopDoor.setTexture(&endOfLevelTexture);
+	this->shopDoor.setPosition(positionX, positionY);
+}
+
 void Game::createCoin(float radius, float positionX, float positionY, int visibility)
 {
 		classCoin coin;
@@ -218,6 +273,21 @@ void Game::createShop(float sizeX, float sizeY, float positionX, float positionY
 	this->shop.setSize(sf::Vector2f(sizeX, sizeY));
 	this->shop.setTexture(&shopTexture);
 	this->shop.setPosition(positionX, positionY);
+}
+
+void Game::spawnMerchant(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->merchant.setSize(sf::Vector2f(sizeX, sizeY));
+	this->merchant.setTexture(&merchantTexture);
+	this->merchant.setPosition(positionX, positionY);
+}
+
+void Game::createChatBox(float sizeX, float sizeY, float positionX, float positionY)
+{
+	this->chatBox.setSize(sf::Vector2f(sizeX, sizeY));
+	this->chatBox.setPosition(positionX, positionY);
+	this->chatBox.setFillColor(sf::Color(0, 0, 0, 64));
+
 }
 
 void Game::initTexture()
@@ -258,11 +328,23 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
+	if (!this->shopDoorTexture.loadFromFile("Images/door.png"))
+	{
+		cout << "Error initTexture";
+	}
 	if (!this->lavaTexture.loadFromFile("Images/lava.png"))
 	{
 		cout << "Error initTexture";
 	}
 	if (!this->shopTexture.loadFromFile("Images/shop.png"))
+	{
+		cout << "Error initTexture";
+	}
+	if (!this->merchantTexture.loadFromFile("Images/merchant.png"))
+	{
+		cout << "Error initTexture";
+	}
+	if (!this->itemTexture_1.loadFromFile("Images/placeholder.png"))
 	{
 		cout << "Error initTexture";
 	}
@@ -281,11 +363,18 @@ void Game::initSprite()
 	this->coinSprite.setTexture(this->coinTexture);
 	this->lavaSprite.setTexture(this->lavaTexture);
 	this->shopSprite.setTexture(this->shopTexture);
+	this->shopDoorSprite.setTexture(this->endOfLevelTexture);
+	this->merchantSprite.setTexture(this->merchantTexture);
+	this->itemSprite_1.setTexture(this->itemTexture_1);
 }
 
 void Game::initFont()
 {
-	if (!this->font.loadFromFile("Fonts/arial.ttf"))
+	if (!this->UIfont.loadFromFile("Fonts/arial.ttf"))
+	{
+		cout << "Error initFont";
+	}
+	if (!this->dialogueFont.loadFromFile("Fonts/indiestarbb_reg.ttf"))
 	{
 		cout << "Error initFont";
 	}
@@ -293,28 +382,33 @@ void Game::initFont()
 
 void Game::initText()
 {
-	this->deathCounterText.setFont(font);
+	this->deathCounterText.setFont(UIfont);
 	this->deathCounterText.setCharacterSize(30);
 	this->deathCounterText.setStyle(sf::Text::Bold);
 	this->deathCounterText.setPosition(20.f, 80.f);
 	this->deathCounterText.setString("Deaths: 0");
 
-	this->currentLevelText.setFont(font);
+	this->currentLevelText.setFont(UIfont);
 	this->currentLevelText.setCharacterSize(30);
 	this->currentLevelText.setStyle(sf::Text::Bold);
 	this->currentLevelText.setPosition(1750.f, 40.f);
 	this->currentLevelText.setString("Level: 1");
 
-	this->totalCoinsText.setFont(font);
+	this->totalCoinsText.setFont(UIfont);
 	this->totalCoinsText.setCharacterSize(30);
 	this->totalCoinsText.setStyle(sf::Text::Bold);
 	this->totalCoinsText.setPosition(1750.f, 80.f);
 	this->totalCoinsText.setString("Coins: " + to_string(this->totalCoins));
+
+	this->dialogueText.setFont(dialogueFont);
+	this->dialogueText.setCharacterSize(20);
+	this->dialogueText.setStyle(sf::Text::Bold);
+	this->dialogueText.setFillColor(sf::Color::Red);
 }
 
 void Game::initTimerText()
 {
-	this->TimerText.setFont(font);
+	this->TimerText.setFont(UIfont);
 	this->TimerText.setCharacterSize(30);
 	this->TimerText.setStyle(sf::Text::Bold);
 	this->TimerText.setPosition(20.f, 40.f);
@@ -453,6 +547,8 @@ void Game::update()
 	moveCharacter();
 	moveEnemy();
 	moveSpikeTrap();
+	shopTimerFun();
+	merchantAnimation();
 	clock_t timeStop = clock();
 	duration = static_cast<float>(timeStop - timeStart) / CLOCKS_PER_SEC;
 	TimerText.setString(to_string(duration));
@@ -508,6 +604,10 @@ void Game::render()
 	
 	this->window->draw(backgroundSprite);
 	this->window->draw(this->shop);
+	this->window->draw(this->shopDoor);
+	this->window->draw(this->merchant);
+	this->window->draw(this->chatBox);
+	this->window->draw(this->dialogueText);
 	this->window->draw(this->character);
 	//this->window->draw(this->movingEnemy);
 	this->window->draw(this->endOfLevel);
@@ -696,7 +796,7 @@ void Game::moveCharacter()
 		{
 			this->coinPickUpSound.play();
 			coins[i].setIsCollected();
-			coins[i].setIsVisible(2);
+			coins[i].setIsVisible(0);
 			this->totalCoins++;
 			this->totalCoinsText.setString("Coins: " + to_string(this->totalCoins));
 			//coins.erase(coins.begin() + i);
@@ -705,12 +805,52 @@ void Game::moveCharacter()
 
 	//shop collision
 	sf::FloatRect shopBounds = shop.getGlobalBounds();
-	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter)
+	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter && this->leftShop == false)
 	{
+		this->rollDialogue = rand() % 3 + 1;
+		this->saveCharacterPosX = character.getPosition().x;
+		this->saveCharacterPosY = character.getPosition().y;
+		this->saveCurrentLevel = this->currentLevel;
+		this->currentLevel = -1;
+		this->levelUpdate = true;
+		this->character.setPosition(this->window_width/2, 1020.f);
+	}
 
-		//this->currentLevel = -1;
-		//this->levelUpdate = true;
-		
+	//shop door collision
+	sf::FloatRect shopDoorBounds = shopDoor.getGlobalBounds();
+	if (shopDoorBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter)
+	{
+		this->currentLevel = this->saveCurrentLevel;
+		this->leftShop = true;
+		this->levelUpdate = true;
+		this->character.setPosition(saveCharacterPosX, saveCharacterPosY);
+
+	}
+
+	//shop items collision
+	for (size_t itemID = 0; itemID < items.size(); itemID++)
+	{
+		if (items[itemID].getItemGlobalBounds().intersects(character.getGlobalBounds())
+			&& !(items[itemID].getIsBought()) && items[itemID].getItemVisibility()
+			&& this->totalCoins >= items[itemID].getItemPrice()
+			&& this->ev.key.code == sf::Keyboard::Enter)
+		{
+			//this->itemPurchaseSound.play();
+			items[itemID].setIsBought();
+			items[itemID].setItemVisibility(0);
+			this->totalCoins -= items[itemID].getItemPrice();
+			this->totalCoinsText.setString("Coins: " + to_string(this->totalCoins));
+			switch (itemID)
+			{
+			case 0:
+				///efekty po kupieniu przedmiotu 0
+				break;
+			case 1:
+				///efekty po kupieniu przedmiotu 1
+				break;
+			///...
+			}
+		}
 	}
 
 	character.move(velocity);
@@ -802,6 +942,44 @@ void Game::moveSpikeTrap()
 	}
 }
 
+void Game::shopTimerFun()
+{
+	if (this->shopTimer < 300)
+		this->shopTimer++;
+	else
+	{
+		this->leftShop = false;
+		this->shopTimer = 0;
+	}
+	
+}
+
+void Game::merchantAnimation()
+{
+	if (this->currentLevel == -1)
+	{
+		if (this->merchantTimer < 50)
+			this->merchantTimer++;
+		else
+		{
+			if (this->merchantAnim == false)
+			{
+				this->merchant.setSize(sf::Vector2f(50, 75));
+				this->merchant.setPosition(1520.f, 998.f);
+				this->merchantTimer = 0;
+				this->merchantAnim = true;
+			}
+			else
+			{
+				this->merchant.setSize(sf::Vector2f(50, 80));
+				this->merchant.setPosition(1520.f, 993.f);
+				this->merchantTimer = 0;
+				this->merchantAnim = false;
+			}
+		}
+	}
+}
+
 void menuHighScore::loadHighScores()
 {
 	ifstream highScoreFile;
@@ -824,9 +1002,9 @@ void menuHighScore::loadHighScores()
 	highScoreFile.close();
 	Results.pop_back();
 	sort(Results.begin(), Results.end());
-	font.loadFromFile("Fonts/arial.ttf");
+	UIfont.loadFromFile("Fonts/arial.ttf");
 	cout << Results[0];
-	if (!this->font.loadFromFile("Fonts/arial.ttf"))
+	if (!this->UIfont.loadFromFile("Fonts/arial.ttf"))
 	{
 		cout << "Error initFont";
 	}
@@ -836,21 +1014,21 @@ void menuHighScore::loadHighScores()
 	{
 		y = y + 50;
 		p = i.getDeaths();
-		this->highScoreTextDeath.setFont(font);
+		this->highScoreTextDeath.setFont(UIfont);
 		this->highScoreTextDeath.setCharacterSize(40);
 		this->highScoreTextDeath.setStyle(sf::Text::Bold);
 		this->highScoreTextDeath.setPosition(700, 200+y);
 		this->highScoreTextDeath.setString(p);
 		textsDeath.push_back(this->highScoreTextDeath);
 		p = i.getTime() ;
-		this->highScoreTextTotal.setFont(font);
+		this->highScoreTextTotal.setFont(UIfont);
 		this->highScoreTextTotal.setCharacterSize(40);
 		this->highScoreTextTotal.setStyle(sf::Text::Bold);
 		this->highScoreTextTotal.setPosition(1200, 200 + y);
 		this->highScoreTextTotal.setString(p);
 		textsTotal.push_back(this->highScoreTextTotal);
 		p = i.getBestStr();
-		this->highScoreTextBest.setFont(font);
+		this->highScoreTextBest.setFont(UIfont);
 		this->highScoreTextBest.setCharacterSize(40);
 		this->highScoreTextBest.setStyle(sf::Text::Bold);
 		this->highScoreTextBest.setPosition(900, 200 + y);
@@ -883,5 +1061,4 @@ void menuHighScore::initBackground()
 	backgroundSprite.setPosition(0, 0);
 	backgroundSprite.setScale(1.0f, 1.0f);
 	windowMenuHighScore.draw(backgroundSprite);
-
 }
