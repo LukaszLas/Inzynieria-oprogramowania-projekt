@@ -54,7 +54,7 @@ class shopItems
 private:
 	int price;
 	bool isBought = false;
-	bool isVisible = true;
+	bool isVisible = false;
 public:
 	sf::RectangleShape item;
 	void setItemSize(float x, float y) { this->item.setSize(sf::Vector2f(x, y)); }
@@ -154,6 +154,8 @@ private:
 	sf::Text currentLevelText;
 	sf::Text totalCoinsText;
 	sf::Text dialogueText;
+	sf::Text itemPriceText_0;
+	sf::Text itemPriceText_1;
 	sf::Texture backgroundTexture;
 	sf::Sprite backgroundSprite;
 	//Audio
@@ -164,6 +166,8 @@ private:
 	sf::Sound spikeTrapSound;
 	sf::SoundBuffer coinPickUpBuffer;
 	sf::Sound coinPickUpSound;
+	sf::SoundBuffer purchaseBuffer;
+	sf::Sound purchaseSound;
 	//Image
 	
 	//Initialization
@@ -176,6 +180,7 @@ private:
 	void initSprite();
 	void initEnemies();
 	void initCoins();
+	void initShopItems();
 	void createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft);
 	void createSpikeTrap(float sizeX, float positionX, float positionY);
 	void createAbyss(float sizeX, float sizeY, float positionX, float positionY, string typeTexture);
@@ -185,7 +190,7 @@ private:
 	void createCoin(float radius, float positionX, float positionY, int visibility);
 	void createShop(float sizeX, float sizeY, float positionX, float positionY);
 	void spawnMerchant(float sizeX, float sizeY, float positionX, float positionY);
-	void createShopItem(float sizeX, float sizeY, float posiitionX, float positionY, int price, string type);
+	void createShopItem(float sizeX, float sizeY, float posiitionX, float positionY, int price, int visibility, string type);
 	void createChatBox(float sizeX, float sizeY, float positionX, float positionY);
 	void initFont();
 	void initText();

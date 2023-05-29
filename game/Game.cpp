@@ -52,6 +52,12 @@ void Game::initCoins()
 	createCoin(20, 1890, 880, 0);
 }
 
+void Game::initShopItems()
+{
+	createShopItem(100, 100, this->window_width / 6 + 120, 800, 2, 0, "boots");
+	createShopItem(100, 100, 4 * (this->window_width / 6) + 110, 800, 2, 0, "wings");
+}
+
 void Game::createMovingEnemies(float positionX, float positionY, float moveRangeRight, float moveRangeLeft)
 {
 	this->movingEnemy.setPosition(positionX, positionY);
@@ -81,9 +87,7 @@ void Game::initObjects()
 		createShopDoor(50, 100, 350, 980);
 		spawnMerchant(50, 80, 1520, 993);
 		createPlatform(300, 20, this->window_width/6, 910);
-		createShopItem(100, 100, this->window_width / 6 + 120, 800, 2, "boots");
 		createPlatform(300, 20, 4*(this->window_width/6), 910);
-		createShopItem(100, 100, 4 * (this->window_width / 6) + 110, 800, 2, "wings");
 		createPlatform(300, 20, 800, 760);
 		createPlatform(300, 20, this->window_width/6, 610);
 		createPlatform(300, 20, 4*(this->window_width/6), 610);
@@ -104,6 +108,26 @@ void Game::initObjects()
 			this->dialogueText.setPosition(1445.f, 970.f);
 			this->dialogueText.setString("Hope you brought some coins!");
 			createChatBox(210, 30, 1440, 970);
+		}
+		for (int i = 0; i < items.size(); i++)
+		{
+			if (!items[i].getIsBought())
+			{
+				items[i].setItemVisibility(1);
+				switch (i)
+				{
+				case 0:
+					this->itemPriceText_0.setPosition(this->window_width/6 + 120, 780.f);
+					this->itemPriceText_0.setString("Price: " + to_string(items[i].getItemPrice()));
+					break;
+				case 1:
+					this->itemPriceText_1.setPosition(4 * (this->window_width / 6) + 110, 780.f);
+					this->itemPriceText_1.setString("Price: " + to_string(items[i].getItemPrice()));
+					break;
+				}
+			}
+			else
+				items[i].setItemVisibility(0);
 		}
 		for (int i = 0; i < coins.size(); i++)
 		{
@@ -139,6 +163,8 @@ void Game::initObjects()
 		spawnMerchant(50, 80, 1820, 3000);
 		createChatBox(100, 20, 1495, 3000);
 		this->dialogueText.setPosition(1500.f, 3000.f);
+		this->itemPriceText_0.setPosition(0, 3000.f);
+		this->itemPriceText_1.setPosition(0, 3000.f);
 		for (int i = 0; i < 5; i++)
 		{
 			coins[i].setIsVisible(1);
@@ -146,6 +172,10 @@ void Game::initObjects()
 		for (size_t i = 5; i < coins.size(); i++)
 		{
 			coins[i].setIsVisible(0);
+		}
+		for (int i = 0; i < items.size(); i++)
+		{
+			items[i].setItemVisibility(0);
 		}
 		break;
 	case 1:
@@ -164,12 +194,14 @@ void Game::initObjects()
 		createPlatform(1920, 7, 0, 1073);
 		createSpikeTrap(50, 720, 600);
 		createAbyss(1680, 11, 0, 1070,"lava");
+		createEndOfLevel(50, 100, 400, 200);
 		createShopDoor(50, 100, 50, 3000);
 		createShop(125, 80, 250, 3000);
-		createEndOfLevel(50, 100, 400, 200);
 		spawnMerchant(50, 80, 1820, 3000);
 		createChatBox(100, 20, 1495, 3000);
 		this->dialogueText.setPosition(1500.f, 3000.f);
+		this->itemPriceText_0.setPosition(0, 3000.f);
+		this->itemPriceText_1.setPosition(0, 3000.f);
 		for (int i = 0; i < 5; i++)
 		{
 			coins[i].setIsVisible(0);
@@ -178,6 +210,10 @@ void Game::initObjects()
 		{
 			coins[i].setIsVisible(1);
 		}
+		for (int i = 0; i < items.size(); i++)
+		{
+			items[i].setItemVisibility(0);
+		}
 		break;
 	case 2:
 		platforms.clear();
@@ -185,10 +221,11 @@ void Game::initObjects()
 		spikeTraps.clear();
 		movingEnemys.clear();
 		coins.clear();
-		createShopDoor(50, 100, 50, 3000);
-		createShop(125, 80, 250, 3000);
-		createEndOfLevel(50, 100, 400, 2200);
+		items.clear();
 		createEndOfGame(50, 100, 1030, 800);
+		createEndOfLevel(50, 100, 400, 2200);
+		createShop(125, 80, 250, 3000);
+		createShopDoor(50, 100, 50, 3000);
 		spawnMerchant(50, 80, 1820, 3000);
 		createChatBox(100, 20, 1495, 3000);
 		this->dialogueText.setPosition(1500.f, 3000.f);
@@ -284,12 +321,13 @@ void Game::spawnMerchant(float sizeX, float sizeY, float positionX, float positi
 	this->merchant.setPosition(positionX, positionY);
 }
 
-void Game::createShopItem(float sizeX, float sizeY, float posiitionX, float positionY, int price, string type)
+void Game::createShopItem(float sizeX, float sizeY, float posiitionX, float positionY, int price, int visibility, string type)
 {
 	shopItems item;
 	item.setItemSize(sizeX, sizeY);
 	item.setItemPosition(posiitionX, positionY);
 	item.setItemPrice(price);
+	item.setItemVisibility(visibility);
 	if (type == "boots")
 		item.setItemTexture(itemTexture_1);
 	if (type == "wings")
@@ -428,6 +466,13 @@ void Game::initText()
 	this->dialogueText.setCharacterSize(20);
 	this->dialogueText.setStyle(sf::Text::Bold);
 	this->dialogueText.setFillColor(sf::Color::Red);
+
+	this->itemPriceText_0.setFont(UIfont);
+	this->itemPriceText_0.setCharacterSize(25);
+	this->itemPriceText_0.setStyle(sf::Text::Bold);
+	this->itemPriceText_1.setFont(UIfont);
+	this->itemPriceText_1.setCharacterSize(25);
+	this->itemPriceText_1.setStyle(sf::Text::Bold);
 }
 
 void Game::initTimerText()
@@ -456,6 +501,10 @@ void Game::initAudio()
 	{
 		cout << "Error initAudio";
 	}
+	if (!this->purchaseBuffer.loadFromFile("Audio/itempurchase.wav"))
+	{
+		cout << "Error initAudio";
+	}
 }
 
 void Game::initSound()
@@ -463,6 +512,7 @@ void Game::initSound()
 	this->jumpSound.setBuffer(this->jumpBuffer);
 	this->spikeTrapSound.setBuffer(this->spikeTrapBuffer);
 	this->coinPickUpSound.setBuffer(this->coinPickUpBuffer);
+	this->purchaseSound.setBuffer(this->purchaseBuffer);
 	this->music.setLoop(true);
 	this->music.setVolume(30.f);
 	this->music.play();
@@ -545,6 +595,7 @@ Game::Game()
 	this->initWindow();
 	this->initCharacter();
 	this->initCoins();
+	this->initShopItems();
 	this->initObjects();
 	//this->initEnemies();
 	this->initFont();
@@ -636,6 +687,8 @@ void Game::render()
 	this->window->draw(this->merchant);
 	this->window->draw(this->chatBox);
 	this->window->draw(this->dialogueText);
+	this->window->draw(this->itemPriceText_0);
+	this->window->draw(this->itemPriceText_1);
 	this->window->draw(this->character);
 	//this->window->draw(this->movingEnemy);
 	this->window->draw(this->endOfLevel);
@@ -660,7 +713,7 @@ void Game::render()
 	}
 	for (size_t i = 0; i < this->items.size(); i++)
 	{
-		if (!this->coins[i].getIsVisible())
+		if (this->items[i].getItemVisibility() && !(this->items[i].getIsBought()))
 		{
 			this->window->draw(items[i].item);
 		}
@@ -841,7 +894,7 @@ void Game::moveCharacter()
 
 	//shop collision
 	sf::FloatRect shopBounds = shop.getGlobalBounds();
-	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter && this->leftShop == false)
+	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter) //&& this->leftShop == false)
 	{
 		this->rollDialogue = rand() % 3 + 1;
 		this->saveCharacterPosX = character.getPosition().x;
@@ -860,8 +913,6 @@ void Game::moveCharacter()
 		this->leftShop = true;
 		this->levelUpdate = true;
 		this->character.setPosition(saveCharacterPosX, saveCharacterPosY);
-
-
 	}
 
 	//shop items collision
@@ -872,7 +923,7 @@ void Game::moveCharacter()
 			&& this->totalCoins >= items[itemID].getItemPrice()
 			&& this->ev.key.code == sf::Keyboard::Enter)
 		{
-			//this->itemPurchaseSound.play();
+			this->purchaseSound.play();
 			items[itemID].setIsBought();
 			items[itemID].setItemVisibility(0);
 			this->totalCoins -= items[itemID].getItemPrice();
@@ -881,13 +932,17 @@ void Game::moveCharacter()
 			{
 			case 0:
 				///efekty po kupieniu przedmiotu 0
+				this->itemPriceText_0.setPosition(0, 3000.f);
 				this->textureR.loadFromFile("Images/imageRBoots.png");
 				this->textureL.loadFromFile("Images/imageLBoots.png");
+				this->moveSpeed = 500.0f;
 				break;
 			case 1:
-				///efekty po kupieniu przedmiotu 1					  
+				///efekty po kupieniu przedmiotu 1		
+				this->itemPriceText_1.setPosition(0, 3000.f);
 				this->textureR.loadFromFile("Images/imageRWings.png");
 				this->textureL.loadFromFile("Images/imageLWings.png");
+				this->jumpHeight = 5.0f;
 				break;
 			///...
 			}
