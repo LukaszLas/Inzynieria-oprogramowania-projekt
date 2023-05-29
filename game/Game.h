@@ -84,7 +84,10 @@ private:
 	//Game objects
 	//Character
 	sf::RectangleShape character;
-	sf::Texture texture;
+	sf::Texture textureL;
+	sf::Texture textureR;
+	sf::Texture characterTextureBoots;
+	sf::Texture characterTextureWings;
 	sf::Sprite sprite;
 	//Platforms
 	sf::Sprite platformSprite;
@@ -138,6 +141,10 @@ private:
 	vector<shopItems> items;
 	sf::Sprite itemSprite_1;
 	sf::Texture itemTexture_1;
+	sf::Sprite itemSprite_2;
+	sf::Texture itemTexture_2;
+	sf::Sprite itemSprite_3;
+	sf::Texture itemTexture_3;
 
 	//UI
 	sf::Font UIfont;
@@ -178,6 +185,7 @@ private:
 	void createCoin(float radius, float positionX, float positionY, int visibility);
 	void createShop(float sizeX, float sizeY, float positionX, float positionY);
 	void spawnMerchant(float sizeX, float sizeY, float positionX, float positionY);
+	void createShopItem(float sizeX, float sizeY, float posiitionX, float positionY, int price, string type);
 	void createChatBox(float sizeX, float sizeY, float positionX, float positionY);
 	void initFont();
 	void initText();

@@ -23,7 +23,7 @@ void Game::initCharacter()
 	this->initTexture();
 	this->initSprite();
 	this->character.setSize(sf::Vector2f(50.f, 50.f));
-	this->character.setTexture(&texture);
+	this->character.setTexture(&textureR);
 }
 
 void Game::initEnemies()
@@ -81,7 +81,9 @@ void Game::initObjects()
 		createShopDoor(50, 100, 350, 980);
 		spawnMerchant(50, 80, 1520, 993);
 		createPlatform(300, 20, this->window_width/6, 910);
+		createShopItem(100, 100, this->window_width / 6 + 120, 800, 2, "boots");
 		createPlatform(300, 20, 4*(this->window_width/6), 910);
+		createShopItem(100, 100, 4 * (this->window_width / 6) + 110, 800, 2, "wings");
 		createPlatform(300, 20, 800, 760);
 		createPlatform(300, 20, this->window_width/6, 610);
 		createPlatform(300, 20, 4*(this->window_width/6), 610);
@@ -282,6 +284,20 @@ void Game::spawnMerchant(float sizeX, float sizeY, float positionX, float positi
 	this->merchant.setPosition(positionX, positionY);
 }
 
+void Game::createShopItem(float sizeX, float sizeY, float posiitionX, float positionY, int price, string type)
+{
+	shopItems item;
+	item.setItemSize(sizeX, sizeY);
+	item.setItemPosition(posiitionX, positionY);
+	item.setItemPrice(price);
+	if (type == "boots")
+		item.setItemTexture(itemTexture_1);
+	if (type == "wings")
+		item.setItemTexture(itemTexture_2);
+	item.setItemVisibility(true);
+	items.push_back(item);
+}
+
 void Game::createChatBox(float sizeX, float sizeY, float positionX, float positionY)
 {
 	this->chatBox.setSize(sf::Vector2f(sizeX, sizeY));
@@ -292,7 +308,11 @@ void Game::createChatBox(float sizeX, float sizeY, float positionX, float positi
 
 void Game::initTexture()
 {
-	if (!this->texture.loadFromFile("Images/image.png"))
+	if (!this->textureR.loadFromFile("Images/image.png"))
+	{
+		cout << "Error initTexture";
+	}
+	if (!this->textureL.loadFromFile("Images/imageL.png"))
 	{
 		cout << "Error initTexture";
 	}
@@ -344,7 +364,11 @@ void Game::initTexture()
 	{
 		cout << "Error initTexture";
 	}
-	if (!this->itemTexture_1.loadFromFile("Images/placeholder.png"))
+	if (!this->itemTexture_1.loadFromFile("Images/boots.png"))
+	{
+		cout << "Error initTexture";
+	}
+	if (!this->itemTexture_2.loadFromFile("Images/wings.png"))
 	{
 		cout << "Error initTexture";
 	}
@@ -352,7 +376,6 @@ void Game::initTexture()
 
 void Game::initSprite()
 {
-	this->sprite.setTexture(this->texture);
 	this->enemySprite.setTexture(this->movingEnemyTexture);
 	this->platformSprite.setTexture(this->platformTexture);
 	this->abyssSprite.setTexture(this->abyssTexture);
@@ -366,6 +389,7 @@ void Game::initSprite()
 	this->shopDoorSprite.setTexture(this->endOfLevelTexture);
 	this->merchantSprite.setTexture(this->merchantTexture);
 	this->itemSprite_1.setTexture(this->itemTexture_1);
+	this->itemSprite_2.setTexture(this->itemTexture_2);
 }
 
 void Game::initFont()
@@ -566,6 +590,10 @@ void Game::update()
 		this->initObjects();
 		levelUpdate = false;
 	}
+	if (this->characterRightGoing)
+		this->sprite.setTexture(textureR);
+	else
+		this->sprite.setTexture(textureL);
 }
 
 void Game::pollEvents()
@@ -630,6 +658,13 @@ void Game::render()
 			this->window->draw(coins[i].coin);
 		}
 	}
+	for (size_t i = 0; i < this->items.size(); i++)
+	{
+		if (!this->coins[i].getIsVisible())
+		{
+			this->window->draw(items[i].item);
+		}
+	}
 	for (auto& i : this->movingEnemys)
 	{
 		this->window->draw(i);
@@ -675,9 +710,10 @@ void Game::moveCharacter()
 	this->velocity.y += gravity * dt;
 
 	if (this->characterRightGoing)
-		this->texture.loadFromFile("Images/image.png");
+		this->character.setTexture(&textureR);
 	else
-		this->texture.loadFromFile("Images/imageL.png");
+		this->character.setTexture(&textureL);
+
 
 	//objects collision
 	for (auto& platform : platforms)
@@ -818,12 +854,13 @@ void Game::moveCharacter()
 
 	//shop door collision
 	sf::FloatRect shopDoorBounds = shopDoor.getGlobalBounds();
-	if (shopDoorBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter)
+	if (shopDoorBounds.intersects(character.getGlobalBounds()))
 	{
 		this->currentLevel = this->saveCurrentLevel;
 		this->leftShop = true;
 		this->levelUpdate = true;
 		this->character.setPosition(saveCharacterPosX, saveCharacterPosY);
+
 
 	}
 
@@ -844,9 +881,13 @@ void Game::moveCharacter()
 			{
 			case 0:
 				///efekty po kupieniu przedmiotu 0
+				this->textureR.loadFromFile("Images/imageRBoots.png");
+				this->textureL.loadFromFile("Images/imageLBoots.png");
 				break;
 			case 1:
-				///efekty po kupieniu przedmiotu 1
+				///efekty po kupieniu przedmiotu 1					  
+				this->textureR.loadFromFile("Images/imageRWings.png");
+				this->textureL.loadFromFile("Images/imageLWings.png");
 				break;
 			///...
 			}
@@ -1020,7 +1061,14 @@ void menuHighScore::loadHighScores()
 		this->highScoreTextDeath.setPosition(700, 200+y);
 		this->highScoreTextDeath.setString(p);
 		textsDeath.push_back(this->highScoreTextDeath);
-		p = i.getTime() ;
+		p = i.getTime();
+		string x = "0";
+		if (p[1] == '.')
+		{
+			for (int i = 0; i < p.length(); i++)
+				x = x + p[i];
+			p = x;
+		}
 		this->highScoreTextTotal.setFont(UIfont);
 		this->highScoreTextTotal.setCharacterSize(40);
 		this->highScoreTextTotal.setStyle(sf::Text::Bold);
