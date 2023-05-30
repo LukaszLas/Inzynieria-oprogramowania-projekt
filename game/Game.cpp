@@ -6,6 +6,8 @@ void Game::initVariable()
 	sf::Vector2f velocity(sf::Vector2f(0, 0));
 	const float window_width = 1920;
 	const float window_height = 1080;
+	loadHighScores();
+	this->initMenu();
 
 }
 
@@ -76,7 +78,14 @@ void Game::initObjects()
 	srand(time(NULL));
 	switch (this->currentLevel)
 	{
-	case -1:                                     ///shop
+	case -3:									 //menu
+		this->menuRender();
+		break;
+	case -2:									 //highscore
+		this->showHighScores();
+		this->initBackgroundHighScore();
+		break;
+	case -1:                                     //shop
 		platforms.clear();
 		abysses.clear();
 		spikeTraps.clear();
@@ -641,10 +650,12 @@ void Game::update()
 		this->initObjects();
 		levelUpdate = false;
 	}
+	if(currentLevel==-3)
 	if (this->characterRightGoing)
 		this->sprite.setTexture(textureR);
 	else
 		this->sprite.setTexture(textureL);
+
 }
 
 void Game::pollEvents()
@@ -659,7 +670,15 @@ void Game::pollEvents()
 		case sf::Event::KeyPressed:
 			if (this->ev.key.code == sf::Keyboard::Escape)
 			{
-				this->window->close();
+				if(currentLevel!=-3)
+				{ 
+				this->currentLevel = -3;
+				levelUpdate = true;
+				}
+				else
+				{
+					this->window->close();
+				}
 			}
 			if (this->ev.key.code == sf::Keyboard::F5)
 			{
@@ -671,7 +690,23 @@ void Game::pollEvents()
 				this->loadGame();
 			}
 			break;
-
+		case sf::Event::MouseButtonPressed:
+			Vector2i mousePosition = Mouse::getPosition(*window);
+			if (menuStartGameText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
+			{
+				this->currentLevel = 0;
+				levelUpdate = true;
+			}
+			if (menuHighScoreText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
+			{
+				this->currentLevel = -2;
+				levelUpdate = true;
+			}
+			if (menuExitText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
+			{
+				this->currentLevel = -2;
+				this->window->close();
+			}
 		}
 	}
 }
@@ -680,7 +715,7 @@ void Game::render()
 {
 	this->window->clear();
 	//draw game objects
-	
+
 	this->window->draw(backgroundSprite);
 	this->window->draw(this->shop);
 	this->window->draw(this->shopDoor);
@@ -706,7 +741,7 @@ void Game::render()
 	}
 	for (size_t i = 0; i < this->coins.size(); i++)
 	{
-		if(!(this->coins[i].getIsCollected()) && this->coins[i].getIsVisible())
+		if (!(this->coins[i].getIsCollected()) && this->coins[i].getIsVisible())
 		{
 			this->window->draw(coins[i].coin);
 		}
@@ -729,7 +764,19 @@ void Game::render()
 	this->window->draw(this->TimerText);
 	this->window->draw(this->currentLevelText);
 	this->window->draw(this->totalCoinsText);
+	if (currentLevel == -2)
+	{
+		this->initBackgroundHighScore();
+		this->showHighScores();
+	}
+	if (currentLevel == -3)
+	{
+		this->menuRender();
+	}
 	this->window->display();
+
+
+	
 }
 
 
@@ -1182,4 +1229,126 @@ void menuHighScore::initBackground()
 	backgroundSprite.setPosition(0, 0);
 	backgroundSprite.setScale(1.0f, 1.0f);
 	windowMenuHighScore.draw(backgroundSprite);
+}
+
+void Game::loadHighScores()
+{
+	ifstream highScoreFile;
+	highScoreFile.open("Saves/highscore.txt");
+	string deaths;
+	string time;
+	float best;
+	int max = 0;
+	while (!highScoreFile.eof())
+	{
+
+		highScoreFile >> deaths >> time >> best;
+		result x(deaths, time, round(best * 1000) / 1000);
+		cout << x;
+		Results.push_back(x);
+		max++;
+		if (max > 10)
+			break;
+	}
+	highScoreFile.close();
+	Results.pop_back();
+	sort(Results.begin(), Results.end());
+	UIfont.loadFromFile("Fonts/arial.ttf");
+	cout << Results[0];
+	if (!this->UIfont.loadFromFile("Fonts/arial.ttf"))
+	{
+		cout << "Error initFont";
+	}
+	string p, b;
+	int y = 0;
+	for (auto& i : Results)
+	{
+		y = y + 50;
+		p = i.getDeaths();
+		this->highScoreTextDeath.setFont(UIfont);
+		this->highScoreTextDeath.setCharacterSize(40);
+		this->highScoreTextDeath.setStyle(sf::Text::Bold);
+		this->highScoreTextDeath.setPosition(700, 200 + y);
+		this->highScoreTextDeath.setString(p);
+		textsDeath.push_back(this->highScoreTextDeath);
+		p = i.getTime();
+		string x = "0";
+		if (p[1] == '.')
+		{
+			for (int i = 0; i < p.length(); i++)
+				x = x + p[i];
+			p = x;
+		}
+		this->highScoreTextTotal.setFont(UIfont);
+		this->highScoreTextTotal.setCharacterSize(40);
+		this->highScoreTextTotal.setStyle(sf::Text::Bold);
+		this->highScoreTextTotal.setPosition(1200, 200 + y);
+		this->highScoreTextTotal.setString(p);
+		textsTotal.push_back(this->highScoreTextTotal);
+		p = i.getBestStr();
+		this->highScoreTextBest.setFont(UIfont);
+		this->highScoreTextBest.setCharacterSize(40);
+		this->highScoreTextBest.setStyle(sf::Text::Bold);
+		this->highScoreTextBest.setPosition(900, 200 + y);
+		this->highScoreTextBest.setString(p);
+		textsBest.push_back(this->highScoreTextBest);
+	}
+
+}
+
+void Game::showHighScores()
+{
+	for (auto& i : textsDeath)
+	{
+		this->window->draw(i);
+	}
+	for (auto& i : textsBest)
+	{
+		this->window->draw(i);
+
+	}
+	for (auto& i : textsTotal)
+	{
+		this->window->draw(i);
+
+	}
+}
+
+void Game::initBackgroundHighScore()
+{
+	backgroundTextureHighScore.loadFromFile("Images/highscore.png");
+	backgroundSpriteHighScore.setTexture(backgroundTextureHighScore);
+	backgroundSprite.setPosition(0, 0);
+	backgroundSprite.setScale(1.0f, 1.0f);
+	this->window->draw(backgroundSpriteHighScore);
+}
+
+void Game::initMenu()
+{
+
+	menuStartGameText.setFont(UIfont);
+	menuStartGameText.setCharacterSize(40);
+	menuStartGameText.setPosition(300, 200);
+	menuStartGameText.setString("Start Game");
+
+	menuHighScoreText.setFont(UIfont);
+	menuHighScoreText.setCharacterSize(40);
+	menuHighScoreText.setPosition(300, 250);
+	menuHighScoreText.setString("HighScore");
+
+	menuExitText.setFont(UIfont);
+	menuExitText.setCharacterSize(40);
+	menuExitText.setPosition(300, 300);
+	menuExitText.setString("Exit");
+	menuBackgroundTexture.loadFromFile("Images/menu.png");
+	menuBackgroundSprite.setTexture(menuBackgroundTexture);
+	menuBackgroundSprite.setPosition(0, 0);
+	menuBackgroundSprite.setScale(1.0f, 1.0f);
+}
+void Game::menuRender()
+{
+	this->window->draw(menuBackgroundSprite);
+	this->window->draw(menuStartGameText);
+	this->window->draw(menuHighScoreText);
+	this->window->draw(menuExitText);
 }

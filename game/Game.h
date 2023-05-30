@@ -72,7 +72,38 @@ public:
 	bool getItemVisibility() { return this->isVisible; }
 	int getItemPrice() { return this->price; }
 };
-
+class result
+{
+private:
+	string deaths;
+	string time;
+	float best;
+public:
+	result(string _deaths, string _time, float _best) { this->deaths = _deaths;  this->time = _time; this->best = _best; }
+	friend std::ostream& operator<<(std::ostream& os, const result& res)
+	{
+		os << "Deaths: " << res.deaths << ", Time: " << res.time << ", Best: " << res.best << endl;
+		return os;
+	}
+	bool operator<(const result& other) const
+	{
+		return best < other.best;
+	}
+	bool operator>(const result& other) const
+	{
+		return best > other.best;
+	}
+	string getDeaths() { return this->deaths; }
+	string getTime() { return this->time; }
+	float getBest() { return this->best; }
+	string getBestStr()
+	{
+		string x = to_string(this->best);
+		x = x.substr(0, 6);
+		cout << x;
+		return x;
+	}
+};
 class Game
 {
 private:
@@ -145,6 +176,28 @@ private:
 	sf::Texture itemTexture_2;
 	sf::Sprite itemSprite_3;
 	sf::Texture itemTexture_3;
+	//Menu
+	Text menuStartGameText;
+	Text menuHighScoreText;
+	Text menuExitText;
+	void initMenu();
+	void menuRender();
+	Texture menuBackgroundTexture;
+	Sprite menuBackgroundSprite;
+	Event menuEvent;
+	//Highscore
+	Text highScoreTextDeath;
+	Text highScoreTextTotal;
+	Text highScoreTextBest;
+	vector<result> Results;
+	vector<sf::Text> textsDeath;
+	vector<sf::Text> textsTotal;
+	vector<sf::Text> textsBest;
+	Texture backgroundTextureHighScore;
+	Sprite backgroundSpriteHighScore;
+	void loadHighScores();
+	void showHighScores();
+	void initBackgroundHighScore();
 
 	//UI
 	sf::Font UIfont;
@@ -226,7 +279,7 @@ private:
 	//float spikeTrapMoveRange = 20;
 	bool moveUp = true;
 	float startingpos;
-	int currentLevel = 0;
+	int currentLevel = -3;
 	bool levelUpdate = true;
 	int totalCoins = 0;
 	bool gameEnded = false;
@@ -264,38 +317,7 @@ public:
 	sf::IntRect uvRect;
 };
 
-class result
-{
-private:
-	string deaths;
-	string time;
-	float best;
-public:
-	result(string _deaths, string _time, float _best) { this->deaths = _deaths;  this->time = _time; this->best = _best;}
-	friend std::ostream& operator<<(std::ostream& os, const result& res)
-	{
-		os << "Deaths: " << res.deaths << ", Time: " << res.time << ", Best: " << res.best <<endl;
-		return os;
-	}
-	bool operator<(const result& other) const
-	{
-		return best < other.best;
-	}
-	bool operator>(const result& other) const
-	{
-		return best > other.best;
-	}
-	string getDeaths() { return this->deaths; }
-	string getTime() { return this->time; }
-	float getBest() { return this->best; }
-	string getBestStr() 
-	{
-		string x= to_string(this->best);
-		x=x.substr(0,6);
-		cout << x;
-		return x;
-	}
-};
+
 class menuHighScore
 {
 private:
