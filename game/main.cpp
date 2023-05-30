@@ -17,6 +17,7 @@ void operator delete (void* ptr, size_t size)
 }
 #endif
 
+
 int main()
 {
 
@@ -34,8 +35,8 @@ int main()
 	
 
 	//std::cout << "Mem allocated: " << memoryAllocated;
+
+    
 	return 0;
-
-
 
 }

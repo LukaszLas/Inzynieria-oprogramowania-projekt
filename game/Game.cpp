@@ -238,6 +238,7 @@ void Game::initObjects()
 		spawnMerchant(50, 80, 1820, 3000);
 		createChatBox(100, 20, 1495, 3000);
 		this->dialogueText.setPosition(1500.f, 3000.f);
+
 	default:
 		break;
 	}
@@ -588,6 +589,7 @@ void Game::loadGame()
 
 		this->initObjects();
 		this->initText();
+		this->inputNickname();
 		this->render();
 	}
 	else
@@ -640,10 +642,15 @@ void Game::update()
 	sf::FloatRect endOfGameBounds = endOfGame.getGlobalBounds();
 	if (endOfGameBounds.intersects(character.getGlobalBounds())&&gameEnded==false)
 	{
-		highscorefile.open("Saves/highscore.txt", ofstream::app);
-		highscorefile << deathCounter << " " << static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC << " " << duration<<endl;
-		highscorefile.close();
+
 		gameEnded = true;
+		endGame = true;
+		this->initObjects();
+		this->inputNickname();
+		highscorefile.open("Saves/highscore.txt", ofstream::app);
+		highscorefile << deathCounter << " " << static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC << " " << duration << " ";
+		highscorefile.close();
+
 	}
 	if (levelUpdate)
 	{
@@ -656,12 +663,21 @@ void Game::update()
 	else
 		this->sprite.setTexture(textureL);
 
+	if (nicknameAccepted)
+	{
+		highscorefile.open("Saves/highscore.txt", ofstream::app);
+		highscorefile << nickname << endl;
+		highscorefile.close();
+		nicknameAccepted = false;
+	}
 }
 
 void Game::pollEvents()
 {
 	while (this->window->pollEvent(this->ev))
 	{
+		Vector2i mousePosition = Mouse::getPosition(*window);
+
 		switch (this->ev.type)
 		{
 		case sf::Event::Closed:
@@ -689,9 +705,12 @@ void Game::pollEvents()
 			{
 				this->loadGame();
 			}
+			if (this->ev.key.code == sf::Keyboard::Enter)
+			{
+				nicknameAccepted = true;
+			}
 			break;
 		case sf::Event::MouseButtonPressed:
-			Vector2i mousePosition = Mouse::getPosition(*window);
 			if (menuStartGameText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
 			{
 				this->currentLevel = 0;
@@ -707,6 +726,26 @@ void Game::pollEvents()
 				this->currentLevel = -2;
 				this->window->close();
 			}
+			break;
+		case sf::Event::TextEntered:
+			if (endGame&&!nicknameAccepted)
+			{
+				if (this->ev.text.unicode < 128)
+				{
+					if (this->ev.text.unicode == '\b' && !nickname.empty())
+					{
+						nickname.pop_back();
+					}
+					else if (this->ev.text.unicode != '\b')
+					{
+						nickname += static_cast<char>(this->ev.text.unicode);
+					}
+					playerNickname.setString(nickname);
+				}
+
+
+			}
+
 		}
 	}
 }
@@ -727,6 +766,11 @@ void Game::render()
 	this->window->draw(this->character);
 	//this->window->draw(this->movingEnemy);
 	this->window->draw(this->endOfLevel);
+	this->window->draw(this->box);
+	this->window->draw(this->inputMess);
+	this->window->draw(this->playerNickname);
+	
+
 	for (auto& i : this->spikeTraps)
 	{
 		this->window->draw(i.spikeTrap);
@@ -764,6 +808,7 @@ void Game::render()
 	this->window->draw(this->TimerText);
 	this->window->draw(this->currentLevelText);
 	this->window->draw(this->totalCoinsText);
+
 	if (currentLevel == -2)
 	{
 		this->initBackgroundHighScore();
@@ -1351,4 +1396,18 @@ void Game::menuRender()
 	this->window->draw(menuStartGameText);
 	this->window->draw(menuHighScoreText);
 	this->window->draw(menuExitText);
+}
+
+void Game::inputNickname()
+{
+	
+	this->box.setSize(sf::Vector2f(500.f, 200.f));
+	this->box.setPosition(760,340);
+	this->box.setFillColor(sf::Color::Blue);
+	this->inputMess.setFont(UIfont);
+	this->inputMess.setPosition(820, 350);
+	this->inputMess.setString("Podaj nickname");
+	this->playerNickname.setFont(UIfont);
+	this->playerNickname.setCharacterSize(40);
+	this->playerNickname.setPosition(820,390);
 }

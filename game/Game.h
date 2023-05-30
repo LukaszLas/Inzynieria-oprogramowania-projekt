@@ -198,7 +198,14 @@ private:
 	void loadHighScores();
 	void showHighScores();
 	void initBackgroundHighScore();
-
+	bool endGame = false;
+	//End Player nickname
+	sf::Text inputMess;
+	sf::Text playerNickname;
+	sf::RectangleShape box;
+	string nickname;
+	void inputNickname();
+	bool nicknameAccepted = false;
 	//UI
 	sf::Font UIfont;
 	sf::Font dialogueFont;
@@ -279,7 +286,7 @@ private:
 	//float spikeTrapMoveRange = 20;
 	bool moveUp = true;
 	float startingpos;
-	int currentLevel = -3;
+	int currentLevel = 2;
 	bool levelUpdate = true;
 	int totalCoins = 0;
 	bool gameEnded = false;
