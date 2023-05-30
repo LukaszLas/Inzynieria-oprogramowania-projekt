@@ -238,6 +238,8 @@ private:
 	float saveCharacterPosY;
 	float saveCharacterPosX;
 	int rollDialogue;
+	bool bootsCollected = false;
+	bool wingsCollected = false;
 	//vector < pair<float, float>> levelStartingPos;
 
 	ofstream gameSave;

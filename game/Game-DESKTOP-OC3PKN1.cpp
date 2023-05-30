@@ -933,34 +933,16 @@ void Game::moveCharacter()
 			case 0:
 				///efekty po kupieniu przedmiotu 0
 				this->itemPriceText_0.setPosition(0, 3000.f);
-				bootsCollected = true;
-				if (wingsCollected)
-				{
-					this->textureR.loadFromFile("Images/imageRBootsWings.png");
-					this->textureL.loadFromFile("Images/imageLBootsWings.png");
-				}
-				else
-				{
-					this->textureR.loadFromFile("Images/imageRBoots.png");
-					this->textureL.loadFromFile("Images/imageLBoots.png");
-				}
+				this->textureR.loadFromFile("Images/imageRBoots.png");
+				this->textureL.loadFromFile("Images/imageLBoots.png");
 				this->moveSpeed = 500.0f;
 				break;
 			case 1:
 				///efekty po kupieniu przedmiotu 1		
 				this->itemPriceText_1.setPosition(0, 3000.f);
+				this->textureR.loadFromFile("Images/imageRWings.png");
+				this->textureL.loadFromFile("Images/imageLWings.png");
 				this->jumpHeight = 5.0f;
-				wingsCollected = true;
-				if (bootsCollected)
-				{
-					this->textureR.loadFromFile("Images/imageRBootsWings.png");
-					this->textureL.loadFromFile("Images/imageLBootsWings.png");
-				}
-				else
-				{
-					this->textureR.loadFromFile("Images/imageRWings.png");
-					this->textureL.loadFromFile("Images/imageLWings.png");
-				}
 				break;
 			///...
 			}
