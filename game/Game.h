@@ -77,12 +77,13 @@ class result
 private:
 	string deaths;
 	string time;
+	string nick;
 	float best;
 public:
-	result(string _deaths, string _time, float _best) { this->deaths = _deaths;  this->time = _time; this->best = _best; }
+	result(string _deaths, string _time, float _best, string _nick) { this->deaths = _deaths;  this->time = _time; this->best = _best; this->nick = _nick; }
 	friend std::ostream& operator<<(std::ostream& os, const result& res)
 	{
-		os << "Deaths: " << res.deaths << ", Time: " << res.time << ", Best: " << res.best << endl;
+		os << "Deaths: " << res.deaths << ", Time: " << res.time << ", Best: " << res.best <<", Nick: "<<res.nick<< endl;
 		return os;
 	}
 	bool operator<(const result& other) const
@@ -95,6 +96,7 @@ public:
 	}
 	string getDeaths() { return this->deaths; }
 	string getTime() { return this->time; }
+	string getNick() { return this->nick; }
 	float getBest() { return this->best; }
 	string getBestStr()
 	{
@@ -189,10 +191,12 @@ private:
 	Text highScoreTextDeath;
 	Text highScoreTextTotal;
 	Text highScoreTextBest;
+	Text highScoreTextNickname;
 	vector<result> Results;
 	vector<sf::Text> textsDeath;
 	vector<sf::Text> textsTotal;
 	vector<sf::Text> textsBest;
+	vector<sf::Text> textsNickname;
 	Texture backgroundTextureHighScore;
 	Sprite backgroundSpriteHighScore;
 	void loadHighScores();
@@ -286,7 +290,7 @@ private:
 	//float spikeTrapMoveRange = 20;
 	bool moveUp = true;
 	float startingpos;
-	int currentLevel = 2;
+	int currentLevel = -3;
 	bool levelUpdate = true;
 	int totalCoins = 0;
 	bool gameEnded = false;

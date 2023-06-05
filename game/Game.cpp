@@ -6,7 +6,6 @@ void Game::initVariable()
 	sf::Vector2f velocity(sf::Vector2f(0, 0));
 	const float window_width = 1920;
 	const float window_height = 1080;
-	loadHighScores();
 	this->initMenu();
 
 }
@@ -81,9 +80,11 @@ void Game::initObjects()
 	case -3:									 //menu
 		this->menuRender();
 		break;
-	case -2:									 //highscore
-		this->showHighScores();
-		this->initBackgroundHighScore();
+	case -2:
+		//highscore
+		this->window->clear();
+		loadHighScores();
+
 		break;
 	case -1:                                     //shop
 		platforms.clear();
@@ -669,6 +670,8 @@ void Game::update()
 		highscorefile << nickname << endl;
 		highscorefile.close();
 		nicknameAccepted = false;
+		this->currentLevel = -2;
+		initObjects();
 	}
 }
 
@@ -986,7 +989,7 @@ void Game::moveCharacter()
 
 	//shop collision
 	sf::FloatRect shopBounds = shop.getGlobalBounds();
-	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter) //&& this->leftShop == false)
+	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Space) //&& this->leftShop == false)
 	{
 		this->rollDialogue = rand() % 3 + 1;
 		this->saveCharacterPosX = character.getPosition().x;
@@ -1013,7 +1016,7 @@ void Game::moveCharacter()
 		if (items[itemID].getItemGlobalBounds().intersects(character.getGlobalBounds())
 			&& !(items[itemID].getIsBought()) && items[itemID].getItemVisibility()
 			&& this->totalCoins >= items[itemID].getItemPrice()
-			&& this->ev.key.code == sf::Keyboard::Enter)
+			&& this->ev.key.code == sf::Keyboard::Space)
 		{
 			this->purchaseSound.play();
 			items[itemID].setIsBought();
@@ -1192,13 +1195,14 @@ void menuHighScore::loadHighScores()
 	highScoreFile.open("Saves/highscore.txt");
 	string deaths;
 	string time;
+	string nick;
 	float best;
 	int max = 0;
 	while (!highScoreFile.eof())
 	{
 		
-		highScoreFile>>deaths>>time>>best;
-		result x(deaths,time,round(best*1000)/1000);
+		highScoreFile>>deaths>>time>>best>>nick;
+		result x(deaths,time,round(best*1000)/1000,nick);
 		cout << x;
 		Results.push_back(x);
 		max++;
@@ -1264,7 +1268,8 @@ void menuHighScore::showHighScores()
 	for (auto& i : textsTotal)
 	{
 		this->windowMenuHighScore.draw(i);
-	}
+	}	
+
 }
 
 void menuHighScore::initBackground()
@@ -1278,17 +1283,21 @@ void menuHighScore::initBackground()
 
 void Game::loadHighScores()
 {
+	this->window->clear();
+
 	ifstream highScoreFile;
 	highScoreFile.open("Saves/highscore.txt");
+	Results.clear();
 	string deaths;
 	string time;
+	string nick;
 	float best;
 	int max = 0;
 	while (!highScoreFile.eof())
 	{
 
-		highScoreFile >> deaths >> time >> best;
-		result x(deaths, time, round(best * 1000) / 1000);
+		highScoreFile >> deaths >> time >> best >> nick;
+		result x(deaths, time, round(best * 1000) / 1000, nick);
 		cout << x;
 		Results.push_back(x);
 		max++;
@@ -1309,6 +1318,13 @@ void Game::loadHighScores()
 	for (auto& i : Results)
 	{
 		y = y + 50;
+		p = i.getNick();
+		this->highScoreTextNickname.setFont(UIfont);
+		this->highScoreTextNickname.setCharacterSize(40);
+		this->highScoreTextNickname.setStyle(sf::Text::Bold);
+		this->highScoreTextNickname.setPosition(450, 200 + y);
+		this->highScoreTextNickname.setString(p);
+		textsNickname.push_back(this->highScoreTextNickname);
 		p = i.getDeaths();
 		this->highScoreTextDeath.setFont(UIfont);
 		this->highScoreTextDeath.setCharacterSize(40);
@@ -1343,6 +1359,9 @@ void Game::loadHighScores()
 
 void Game::showHighScores()
 {
+	this->window->clear();
+	this->window->draw(backgroundSpriteHighScore);
+
 	for (auto& i : textsDeath)
 	{
 		this->window->draw(i);
@@ -1356,7 +1375,12 @@ void Game::showHighScores()
 	{
 		this->window->draw(i);
 
+	}	
+	for (auto& i : textsNickname)
+	{
+		this->window->draw(i);
 	}
+
 }
 
 void Game::initBackgroundHighScore()
