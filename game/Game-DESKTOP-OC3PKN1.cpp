@@ -6,7 +6,6 @@ void Game::initVariable()
 	sf::Vector2f velocity(sf::Vector2f(0, 0));
 	const float window_width = 1920;
 	const float window_height = 1080;
-	this->initMenu();
 
 }
 
@@ -77,16 +76,7 @@ void Game::initObjects()
 	srand(time(NULL));
 	switch (this->currentLevel)
 	{
-	case -3:									 //menu
-		this->menuRender();
-		break;
-	case -2:
-		//highscore
-		this->window->clear();
-		loadHighScores();
-
-		break;
-	case -1:                                     //shop
+	case -1:                                     ///shop
 		platforms.clear();
 		abysses.clear();
 		spikeTraps.clear();
@@ -239,7 +229,6 @@ void Game::initObjects()
 		spawnMerchant(50, 80, 1820, 3000);
 		createChatBox(100, 20, 1495, 3000);
 		this->dialogueText.setPosition(1500.f, 3000.f);
-
 	default:
 		break;
 	}
@@ -590,7 +579,6 @@ void Game::loadGame()
 
 		this->initObjects();
 		this->initText();
-		this->inputNickname();
 		this->render();
 	}
 	else
@@ -643,44 +631,26 @@ void Game::update()
 	sf::FloatRect endOfGameBounds = endOfGame.getGlobalBounds();
 	if (endOfGameBounds.intersects(character.getGlobalBounds())&&gameEnded==false)
 	{
-
-		gameEnded = true;
-		endGame = true;
-		this->initObjects();
-		this->inputNickname();
 		highscorefile.open("Saves/highscore.txt", ofstream::app);
-		highscorefile << deathCounter << " " << static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC << " " << duration << " ";
+		highscorefile << deathCounter << " " << static_cast<float>(timeStop - totalTime) / CLOCKS_PER_SEC << " " << duration<<endl;
 		highscorefile.close();
-
+		gameEnded = true;
 	}
 	if (levelUpdate)
 	{
 		this->initObjects();
 		levelUpdate = false;
 	}
-	if(currentLevel==-3)
 	if (this->characterRightGoing)
 		this->sprite.setTexture(textureR);
 	else
 		this->sprite.setTexture(textureL);
-
-	if (nicknameAccepted)
-	{
-		highscorefile.open("Saves/highscore.txt", ofstream::app);
-		highscorefile << nickname << endl;
-		highscorefile.close();
-		nicknameAccepted = false;
-		this->currentLevel = -2;
-		initObjects();
-	}
 }
 
 void Game::pollEvents()
 {
 	while (this->window->pollEvent(this->ev))
 	{
-		Vector2i mousePosition = Mouse::getPosition(*window);
-
 		switch (this->ev.type)
 		{
 		case sf::Event::Closed:
@@ -689,15 +659,7 @@ void Game::pollEvents()
 		case sf::Event::KeyPressed:
 			if (this->ev.key.code == sf::Keyboard::Escape)
 			{
-				if(currentLevel!=-3)
-				{ 
-				this->currentLevel = -3;
-				levelUpdate = true;
-				}
-				else
-				{
-					this->window->close();
-				}
+				this->window->close();
 			}
 			if (this->ev.key.code == sf::Keyboard::F5)
 			{
@@ -708,46 +670,7 @@ void Game::pollEvents()
 			{
 				this->loadGame();
 			}
-			if (this->ev.key.code == sf::Keyboard::Enter)
-			{
-				nicknameAccepted = true;
-			}
 			break;
-		case sf::Event::MouseButtonPressed:
-			if (menuStartGameText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
-			{
-				this->currentLevel = 0;
-				levelUpdate = true;
-			}
-			if (menuHighScoreText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
-			{
-				this->currentLevel = -2;
-				levelUpdate = true;
-			}
-			if (menuExitText.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
-			{
-				this->currentLevel = -2;
-				this->window->close();
-			}
-			break;
-		case sf::Event::TextEntered:
-			if (endGame&&!nicknameAccepted)
-			{
-				if (this->ev.text.unicode < 128)
-				{
-					if (this->ev.text.unicode == '\b' && !nickname.empty())
-					{
-						nickname.pop_back();
-					}
-					else if (this->ev.text.unicode != '\b')
-					{
-						nickname += static_cast<char>(this->ev.text.unicode);
-					}
-					playerNickname.setString(nickname);
-				}
-
-
-			}
 
 		}
 	}
@@ -757,7 +680,7 @@ void Game::render()
 {
 	this->window->clear();
 	//draw game objects
-
+	
 	this->window->draw(backgroundSprite);
 	this->window->draw(this->shop);
 	this->window->draw(this->shopDoor);
@@ -769,11 +692,6 @@ void Game::render()
 	this->window->draw(this->character);
 	//this->window->draw(this->movingEnemy);
 	this->window->draw(this->endOfLevel);
-	this->window->draw(this->box);
-	this->window->draw(this->inputMess);
-	this->window->draw(this->playerNickname);
-	
-
 	for (auto& i : this->spikeTraps)
 	{
 		this->window->draw(i.spikeTrap);
@@ -788,7 +706,7 @@ void Game::render()
 	}
 	for (size_t i = 0; i < this->coins.size(); i++)
 	{
-		if (!(this->coins[i].getIsCollected()) && this->coins[i].getIsVisible())
+		if(!(this->coins[i].getIsCollected()) && this->coins[i].getIsVisible())
 		{
 			this->window->draw(coins[i].coin);
 		}
@@ -811,20 +729,7 @@ void Game::render()
 	this->window->draw(this->TimerText);
 	this->window->draw(this->currentLevelText);
 	this->window->draw(this->totalCoinsText);
-
-	if (currentLevel == -2)
-	{
-		this->initBackgroundHighScore();
-		this->showHighScores();
-	}
-	if (currentLevel == -3)
-	{
-		this->menuRender();
-	}
 	this->window->display();
-
-
-	
 }
 
 
@@ -989,7 +894,7 @@ void Game::moveCharacter()
 
 	//shop collision
 	sf::FloatRect shopBounds = shop.getGlobalBounds();
-	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Space) //&& this->leftShop == false)
+	if (shopBounds.intersects(character.getGlobalBounds()) && this->ev.key.code == sf::Keyboard::Enter) //&& this->leftShop == false)
 	{
 		this->rollDialogue = rand() % 3 + 1;
 		this->saveCharacterPosX = character.getPosition().x;
@@ -1016,7 +921,7 @@ void Game::moveCharacter()
 		if (items[itemID].getItemGlobalBounds().intersects(character.getGlobalBounds())
 			&& !(items[itemID].getIsBought()) && items[itemID].getItemVisibility()
 			&& this->totalCoins >= items[itemID].getItemPrice()
-			&& this->ev.key.code == sf::Keyboard::Space)
+			&& this->ev.key.code == sf::Keyboard::Enter)
 		{
 			this->purchaseSound.play();
 			items[itemID].setIsBought();
@@ -1028,34 +933,16 @@ void Game::moveCharacter()
 			case 0:
 				///efekty po kupieniu przedmiotu 0
 				this->itemPriceText_0.setPosition(0, 3000.f);
-				bootsCollected = true;
-				if (wingsCollected)
-				{
-					this->textureR.loadFromFile("Images/imageRBootsWings.png");
-					this->textureL.loadFromFile("Images/imageLBootsWings.png");
-				}
-				else
-				{
-					this->textureR.loadFromFile("Images/imageRBoots.png");
-					this->textureL.loadFromFile("Images/imageLBoots.png");
-				}
+				this->textureR.loadFromFile("Images/imageRBoots.png");
+				this->textureL.loadFromFile("Images/imageLBoots.png");
 				this->moveSpeed = 500.0f;
 				break;
 			case 1:
 				///efekty po kupieniu przedmiotu 1		
 				this->itemPriceText_1.setPosition(0, 3000.f);
+				this->textureR.loadFromFile("Images/imageRWings.png");
+				this->textureL.loadFromFile("Images/imageLWings.png");
 				this->jumpHeight = 5.0f;
-				wingsCollected = true;
-				if (bootsCollected)
-				{
-					this->textureR.loadFromFile("Images/imageRBootsWings.png");
-					this->textureL.loadFromFile("Images/imageLBootsWings.png");
-				}
-				else
-				{
-					this->textureR.loadFromFile("Images/imageRWings.png");
-					this->textureL.loadFromFile("Images/imageLWings.png");
-				}
 				break;
 			///...
 			}
@@ -1195,14 +1082,13 @@ void menuHighScore::loadHighScores()
 	highScoreFile.open("Saves/highscore.txt");
 	string deaths;
 	string time;
-	string nick;
 	float best;
 	int max = 0;
 	while (!highScoreFile.eof())
 	{
 		
-		highScoreFile>>deaths>>time>>best>>nick;
-		result x(deaths,time,round(best*1000)/1000,nick);
+		highScoreFile>>deaths>>time>>best;
+		result x(deaths,time,round(best*1000)/1000);
 		cout << x;
 		Results.push_back(x);
 		max++;
@@ -1268,8 +1154,7 @@ void menuHighScore::showHighScores()
 	for (auto& i : textsTotal)
 	{
 		this->windowMenuHighScore.draw(i);
-	}	
-
+	}
 }
 
 void menuHighScore::initBackground()
@@ -1279,159 +1164,4 @@ void menuHighScore::initBackground()
 	backgroundSprite.setPosition(0, 0);
 	backgroundSprite.setScale(1.0f, 1.0f);
 	windowMenuHighScore.draw(backgroundSprite);
-}
-
-void Game::loadHighScores()
-{
-	this->window->clear();
-
-	ifstream highScoreFile;
-	highScoreFile.open("Saves/highscore.txt");
-	Results.clear();
-	string deaths;
-	string time;
-	string nick;
-	float best;
-	int max = 0;
-	while (!highScoreFile.eof())
-	{
-
-		highScoreFile >> deaths >> time >> best >> nick;
-		result x(deaths, time, round(best * 1000) / 1000, nick);
-		cout << x;
-		Results.push_back(x);
-		max++;
-		if (max > 10)
-			break;
-	}
-	highScoreFile.close();
-	Results.pop_back();
-	sort(Results.begin(), Results.end());
-	UIfont.loadFromFile("Fonts/arial.ttf");
-	cout << Results[0];
-	if (!this->UIfont.loadFromFile("Fonts/arial.ttf"))
-	{
-		cout << "Error initFont";
-	}
-	string p, b;
-	int y = 0;
-	for (auto& i : Results)
-	{
-		y = y + 50;
-		p = i.getNick();
-		this->highScoreTextNickname.setFont(UIfont);
-		this->highScoreTextNickname.setCharacterSize(40);
-		this->highScoreTextNickname.setStyle(sf::Text::Bold);
-		this->highScoreTextNickname.setPosition(450, 200 + y);
-		this->highScoreTextNickname.setString(p);
-		textsNickname.push_back(this->highScoreTextNickname);
-		p = i.getDeaths();
-		this->highScoreTextDeath.setFont(UIfont);
-		this->highScoreTextDeath.setCharacterSize(40);
-		this->highScoreTextDeath.setStyle(sf::Text::Bold);
-		this->highScoreTextDeath.setPosition(700, 200 + y);
-		this->highScoreTextDeath.setString(p);
-		textsDeath.push_back(this->highScoreTextDeath);
-		p = i.getTime();
-		string x = "0";
-		if (p[1] == '.')
-		{
-			for (int i = 0; i < p.length(); i++)
-				x = x + p[i];
-			p = x;
-		}
-		this->highScoreTextTotal.setFont(UIfont);
-		this->highScoreTextTotal.setCharacterSize(40);
-		this->highScoreTextTotal.setStyle(sf::Text::Bold);
-		this->highScoreTextTotal.setPosition(1200, 200 + y);
-		this->highScoreTextTotal.setString(p);
-		textsTotal.push_back(this->highScoreTextTotal);
-		p = i.getBestStr();
-		this->highScoreTextBest.setFont(UIfont);
-		this->highScoreTextBest.setCharacterSize(40);
-		this->highScoreTextBest.setStyle(sf::Text::Bold);
-		this->highScoreTextBest.setPosition(900, 200 + y);
-		this->highScoreTextBest.setString(p);
-		textsBest.push_back(this->highScoreTextBest);
-	}
-
-}
-
-void Game::showHighScores()
-{
-	this->window->clear();
-	this->window->draw(backgroundSpriteHighScore);
-
-	for (auto& i : textsDeath)
-	{
-		this->window->draw(i);
-	}
-	for (auto& i : textsBest)
-	{
-		this->window->draw(i);
-
-	}
-	for (auto& i : textsTotal)
-	{
-		this->window->draw(i);
-
-	}	
-	for (auto& i : textsNickname)
-	{
-		this->window->draw(i);
-	}
-
-}
-
-void Game::initBackgroundHighScore()
-{
-	backgroundTextureHighScore.loadFromFile("Images/highscore.png");
-	backgroundSpriteHighScore.setTexture(backgroundTextureHighScore);
-	backgroundSprite.setPosition(0, 0);
-	backgroundSprite.setScale(1.0f, 1.0f);
-	this->window->draw(backgroundSpriteHighScore);
-}
-
-void Game::initMenu()
-{
-
-	menuStartGameText.setFont(UIfont);
-	menuStartGameText.setCharacterSize(40);
-	menuStartGameText.setPosition(300, 200);
-	menuStartGameText.setString("Start Game");
-
-	menuHighScoreText.setFont(UIfont);
-	menuHighScoreText.setCharacterSize(40);
-	menuHighScoreText.setPosition(300, 250);
-	menuHighScoreText.setString("HighScore");
-
-	menuExitText.setFont(UIfont);
-	menuExitText.setCharacterSize(40);
-	menuExitText.setPosition(300, 300);
-	menuExitText.setString("Exit");
-	menuBackgroundTexture.loadFromFile("Images/menu.png");
-	menuBackgroundSprite.setTexture(menuBackgroundTexture);
-	menuBackgroundSprite.setPosition(0, 0);
-	menuBackgroundSprite.setScale(1.0f, 1.0f);
-}
-void Game::menuRender()
-{
-	this->window->draw(menuBackgroundSprite);
-	this->window->draw(menuStartGameText);
-	this->window->draw(menuHighScoreText);
-	this->window->draw(menuExitText);
-}
-
-void Game::inputNickname()
-{
-	
-	this->box.setSize(sf::Vector2f(500.f, 200.f));
-	this->box.setPosition(760,340);
-	this->box.setFillColor(sf::Color::Blue);
-	this->inputMess.setFont(UIfont);
-	this->inputMess.setPosition(820, 350);
-	this->inputMess.setString("Podaj nickname");
-	this->playerNickname.setFont(UIfont);
-	this->playerNickname.setCharacterSize(40);
-	this->playerNickname.setPosition(820,390);
 }
